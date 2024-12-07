@@ -1,0 +1,74 @@
+{
+  "pages": [
+    {
+      "path": "pages/lists/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+    },
+    {
+      "path": "pages/groups/index",
+      "style": {
+				"navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/invitations/index",
+      "style": {
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "可视化"
+			}
+    },
+    {
+      "path": "pages/me/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "可视化"
+			}
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#000C3F",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/lists/index",
+				"iconPath": "static/image/tarbar/index.png",
+				"selectedIconPath": "static/image/tarbar/index_selected.png",
+				"text": "清单"
+			},
+			{
+				"pagePath": "pages/groups/index",
+				"iconPath": "static/image/tarbar/questionnaire.png",
+				"selectedIconPath": "static/image/tarbar/questionnaire_selected.png",
+				"text": "智能客服"
+			},
+			{
+				"pagePath": "pages/invitations/index",
+				"iconPath": "static/image/tarbar/show.png",
+				"selectedIconPath": "static/image/tarbar/show_selected.png",
+				"text": "好友邀请"
+			},
+			{
+				"pagePath": "pages/me/index",
+				"iconPath": "static/image/tarbar/me.png",
+				"selectedIconPath": "static/image/tarbar/me_selected.png",
+				"text": "我的"
+			}
+		]
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^uni-((?!(shadow-root|icons)).*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+		}
+	}
+}
