@@ -7,12 +7,6 @@
 			}
     },
     {
-      "path": "pages/groups/index",
-      "style": {
-				"navigationStyle": "custom"
-      }
-    },
-    {
       "path": "pages/invitations/index",
       "style": {
 				"navigationStyle": "custom",
@@ -26,6 +20,13 @@
 				"navigationStyle": "custom",
 				"navigationBarTitleText": "可视化"
 			}
+    },
+		{
+      "path": "pages/chat/index",
+      "style": {
+        "navigationBarTitleText": "AI助手",
+        "enablePullDownRefresh": false
+      }
     }
   ],
   "globalStyle": {
@@ -46,10 +47,10 @@
 				"text": "清单"
 			},
 			{
-				"pagePath": "pages/groups/index",
+				"pagePath": "pages/chat/index",
 				"iconPath": "static/image/tarbar/questionnaire.png",
 				"selectedIconPath": "static/image/tarbar/questionnaire_selected.png",
-				"text": "智能客服"
+				"text": "AI助手"
 			},
 			{
 				"pagePath": "pages/invitations/index",

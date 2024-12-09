@@ -41,6 +41,20 @@ export const useAuthStore = defineStore('auth', {
         });
         throw error;
       }
+    },
+    setToken(token) {
+      this.token = token;
+      uni.setStorageSync('token', token);
+    },
+    setUserInfo(user) {
+      this.user = user;
+      uni.setStorageSync('user', user);
+    },
+    logout() {
+      this.token = '';
+      this.user = null;
+      uni.removeStorageSync('token');
+      uni.removeStorageSync('user');
     }
   }
 });
