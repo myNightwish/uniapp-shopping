@@ -48,11 +48,9 @@
           @confirm="sendMessage"
           auto-height
         />
-        <view class="input-actions">
           <text class="char-count" :class="{ 'near-limit': inputMessage.length > 900 }">
             {{ inputMessage.length }}/1000
           </text>
-        </view>
       </view>
       
       <button 
@@ -91,9 +89,6 @@ const hasMore = ref(true);
 const canSend = computed(() => {
   return inputMessage.value.trim() && !isWaitingResponse.value;
 });
-watch(chatMessages, (newVal, oldVal) => {
-  console.log('Messages changed:', newVal);
-}, { deep: true });
 
 // 消息发送
 const sendMessage = async () => {
@@ -185,7 +180,7 @@ const loadHistory = async () => {
     
     const formattedMessages = data.items.map(item => ({
       id: item.id,
-      type: 'ai',
+      type: item.type,
       content: item.content,
       status: 'completed',
       timestamp: new Date(item.timestamp),
@@ -289,7 +284,6 @@ onMounted(() => {
 
 .chat-list {
   flex: 1;
-  padding: 20rpx;
 }
 
 .input-area {

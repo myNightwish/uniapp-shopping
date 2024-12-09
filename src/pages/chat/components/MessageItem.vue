@@ -8,18 +8,11 @@
       <view class="name">{{ message.type === 'user' ? '你' : 'AI助手' }}</view>
       <view class="bubble">
         <template v-if="message.type === 'ai'">
-          <view v-if="message.status === 'pending'" class="thinking-animation" >
-              <view class="fox-mascot" :class="{ 'fox-thinking': isWaitingResponse }">
-                <image src="/static/image/avatar/fox.webp" mode="aspectFit" />
-                <view class="fox-eyes">
-                  <view class="eye left" :class="{ 'blink': isBlinking }"></view>
-                  <view class="eye right" :class="{ 'blink': isBlinking }"></view>
-                </view>
-              </view>
-            <image src="/static/image/avatar/fox.webp" mode="aspectFit" />
-              <view class="fox-eyes">
-                <view class="eye left" :class="{ 'blink': isBlinking }"></view>
-                <view class="eye right" :class="{ 'blink': isBlinking }"></view>
+          <view v-if="message.status === 'pending'" class="thinking-animation">
+            <view class="eyes-container">
+              <cute-eye :size="80" />
+              <view class="kawaii-mouth"> </view>
+              <cute-eye :size="80" />
             </view>
           </view>
           <view v-else-if="message.status === 'failed'" class="error">
@@ -47,7 +40,7 @@
 import { computed, watch } from 'vue';
 import TypeWriter from './TypeWriter.vue';
 import { formatTime } from '@/utils/time';
-
+import CuteEye  from './CuteEye.vue'
 const props = defineProps({
   message: {
     type: Object,
@@ -138,15 +131,26 @@ const avatarSrc = computed(() => {
   }
   
   .bubble {
+    width: 65vw;
     padding: 20rpx;
     background: #fff;
-    border-radius: 20rpx 20rpx 20rpx 0;
+    border-radius: 20rpx;
     box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
     font-size: 28rpx;
     line-height: 1.5;
     
     .error {
       color: #ff4d4f;
+    }
+    .thinking-animation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20rpx;
+      animation: blink 1.4s infinite ease-in-out;
+    }
+    .eyes-container {
+      display: flex;
     }
   }
   
@@ -157,61 +161,9 @@ const avatarSrc = computed(() => {
   }
 }
 
-.thinking-animation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20rpx;
-  
-  .dot {
-    width: 8rpx;
-    height: 8rpx;
-    margin: 0 6rpx;
-    background: #999;
-    border-radius: 50%;
-    animation: bounce 1.4s infinite ease-in-out;
-    
-    &:nth-child(1) { animation-delay: -0.32s; }
-    &:nth-child(2) { animation-delay: -0.16s; }
-  }
-  .fox-mascot {
-  position: absolute;
-  top: 20rpx;
-  right: 20rpx;
-  width: 120rpx;
-  height: 120rpx;
-  
-  image {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .fox-eyes {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: space-between;
-    width: 60%;
-    
-    .eye {
-      width: 12rpx;
-      height: 12rpx;
-      background-color: #000;
-      border-radius: 50%;
-      transition: all 0.2s;
-      
-      &.blink {
-        transform: scaleY(0.1);
-      }
-    }
-  }
-  
-  &.fox-thinking {
-    animation: bounce 0.6s infinite alternate;
-  }
-}
+@keyframes blink {
+  0%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.4); }
 }
 
 @keyframes pulse {
