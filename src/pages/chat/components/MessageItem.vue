@@ -8,21 +8,33 @@
       <view class="name">{{ message.type === 'user' ? '你' : 'AI助手' }}</view>
       <view class="bubble">
         <template v-if="message.type === 'ai'">
-          <view v-if="message.status === 'pending'" class="thinking-animation">
-            <view class="dot"></view>
-            <view class="dot"></view>
-            <view class="dot"></view>
+          <view v-if="message.status === 'pending'" class="thinking-animation" >
+              <view class="fox-mascot" :class="{ 'fox-thinking': isWaitingResponse }">
+                <image src="/static/image/avatar/fox.webp" mode="aspectFit" />
+                <view class="fox-eyes">
+                  <view class="eye left" :class="{ 'blink': isBlinking }"></view>
+                  <view class="eye right" :class="{ 'blink': isBlinking }"></view>
+                </view>
+              </view>
+            <image src="/static/image/avatar/fox.webp" mode="aspectFit" />
+              <view class="fox-eyes">
+                <view class="eye left" :class="{ 'blink': isBlinking }"></view>
+                <view class="eye right" :class="{ 'blink': isBlinking }"></view>
+            </view>
           </view>
           <view v-else-if="message.status === 'failed'" class="error">
             {{ message.error || '回答生成失败' }}
           </view>
-          <TypeWriter 
-            v-else 
-            :text="message.content" 
-            :key="message.id"
-            class="type-writer-wrapper"
-            @complete="$emit('typeComplete')"
-          />
+          <template v-else>
+            <text v-if="message.isHistorical">{{ message.content }}</text>
+            <TypeWriter 
+              v-else 
+              :text="message.content" 
+              :key="message.id"
+              class="type-writer-wrapper"
+              @complete="$emit('typeComplete')"
+            />
+          </template>
         </template>
         <text v-else>{{ message.content }}</text>
       </view>
@@ -162,6 +174,44 @@ const avatarSrc = computed(() => {
     &:nth-child(1) { animation-delay: -0.32s; }
     &:nth-child(2) { animation-delay: -0.16s; }
   }
+  .fox-mascot {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  width: 120rpx;
+  height: 120rpx;
+  
+  image {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .fox-eyes {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    
+    .eye {
+      width: 12rpx;
+      height: 12rpx;
+      background-color: #000;
+      border-radius: 50%;
+      transition: all 0.2s;
+      
+      &.blink {
+        transform: scaleY(0.1);
+      }
+    }
+  }
+  
+  &.fox-thinking {
+    animation: bounce 0.6s infinite alternate;
+  }
+}
 }
 
 @keyframes pulse {
@@ -174,4 +224,5 @@ const avatarSrc = computed(() => {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
 }
+
 </style>

@@ -1,20 +1,9 @@
 <template>
   <view class="chat-container">
     <!-- 顶部状态栏 -->
-    <view class="status-bar">
-      <view class="status-info">
-        <view :class="['status-indicator', isConnected ? 'connected' : 'disconnected']" />
-        {{ isConnected ? '已连接' : '未连接' }}
-      </view>
-      <view class="action-buttons">
-        <button class="icon-btn" @tap="scrollToBottom">
-          <text class="iconfont icon-arrow-down" />
-        </button>
-        <button class="icon-btn" @tap="clearChat">
-          <text class="iconfont icon-delete" />
-        </button>
-      </view>
-    </view>
+    <image class="background-image" src="/static/image/avatar/bg.webp" mode="aspectFill" />
+    <!-- Chat Content -->
+    <view class="chat-content">
 
     <!-- 聊天消息列表 -->
     <scroll-view 
@@ -74,6 +63,7 @@
       >
         <text class="iconfont" :class="isWaitingResponse ? 'icon-loading' : 'icon-send'" />
       </button>
+      </view>
     </view>
   </view>
 </template>
@@ -196,9 +186,10 @@ const loadHistory = async () => {
     const formattedMessages = data.items.map(item => ({
       id: item.id,
       type: 'ai',
-      content: item.answer,
+      content: item.content,
       status: 'completed',
-      timestamp: new Date(item.createdAt)
+      timestamp: new Date(item.timestamp),
+      isHistorical: item.isHistorical
     }));
     
     chatMessages.value.unshift(...formattedMessages);
@@ -226,7 +217,6 @@ const loadHistory = async () => {
 const scrollToBottom = () => {
   nextTick(() => {
     const lastMessage = chatMessages.value[chatMessages.value.length - 1];
-    console.log('lastMessage: ', lastMessage);
     if (lastMessage && lastMessage.id) {
       scrollToMessage.value = 'msg-' + lastMessage.id;
     }
@@ -271,176 +261,88 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color: #f7f7f7;
+  height: 100vh;  /* 使其填充整个视口高度 */
+  overflow-y: auto;  /* 允许垂直滚动 */
+  margin-bottom: 60rpx;  /* 给底部留些空间 */
 }
 
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx;
-  background: #fff;
-  border-bottom: 1rpx solid #eee;
-  
-  .status-info {
-    display: flex;
-    align-items: center;
-    font-size: 24rpx;
-    color: #666;
-    
-    .status-indicator {
-      width: 12rpx;
-      height: 12rpx;
-      border-radius: 50%;
-      margin-right: 10rpx;
-      
-      &.connected {
-        background: #52c41a;
-      }
-      
-      &.disconnected {
-        background: #ff4d4f;
-      }
-    }
-  }
-  
-  .action-buttons {
-    display: flex;
-    gap: 20rpx;
-  }
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
+
+.chat-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 
 .chat-list {
   flex: 1;
-  position: relative;
-}
-
-.messages-wrapper {
-  padding: 20rpx 0;
-  min-height: 100%;
-}
-
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 20rpx;
-  color: #999;
-  font-size: 24rpx;
-  
-  .spinner {
-    width: 30rpx;
-    height: 30rpx;
-    margin-right: 10rpx;
-    border: 2rpx solid #999;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-}
-
-.scroll-bottom {
-  position: fixed;
-  right: 30rpx;
-  bottom: 200rpx;
-  width: 80rpx;
-  height: 80rpx;
-  background: rgba(0,0,0,0.6);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 40rpx;
-  opacity: 0.8;
-  transition: all 0.3s;
-  
-  &:active {
-    opacity: 1;
-    transform: scale(0.95);
-  }
 }
 
 .input-area {
+  display: flex;
   padding: 20rpx;
-  background: #fff;
-  border-top: 1rpx solid #eee;
-  transition: all 0.3s;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   
-  &.input-focus {
-    padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  }
-}
-
-.input-wrapper {
-  flex: 1;
-  margin-right: 20rpx;
-  background: #f5f5f5;
-  border-radius: 36rpx;
-  padding: 20rpx;
-  transition: all 0.3s;
-  
-  .input-box {
-    width: 100%;
-    min-height: 72rpx;
-    max-height: 200rpx;
-    font-size: 28rpx;
-    line-height: 1.5;
-  }
-  
-  .input-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10rpx;
+  .input-wrapper {
+    flex: 1;
+    margin-right: 20rpx;
     
-    .char-count {
-      font-size: 24rpx;
-      color: #999;
-      
-      &.near-limit {
-        color: #ff4d4f;
-      }
+    .input-box {
+      width: 100%;
+      min-height: 72rpx;
+      padding: 10rpx 20rpx;
+      font-size: 28rpx;
+      line-height: 1.5;
+      background-color: #fff;
+      border-radius: 36rpx;
+      box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .send-btn {
+    width: 72rpx;
+    height: 72rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #FF9D6C, #FF5E62);
+    border-radius: 50%;
+    box-shadow: 0 4rpx 10rpx rgba(255, 94, 98, 0.3);
+    transition: all 0.3s;
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    &.sending {
+      animation: pulse 1s infinite;
+    }
+    
+    .iconfont {
+      color: #fff;
+      font-size: 36rpx;
     }
   }
 }
 
-.send-btn {
-  width: 72rpx;
-  height: 72rpx;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #007AFF;
-  border-radius: 50%;
-  transition: all 0.3s;
-  
-  &:disabled {
-    background: #ccc;
-  }
-  
-  &.sending {
-    animation: pulse 1.5s infinite;
-  }
-  
-  .iconfont {
-    color: #fff;
-    font-size: 36rpx;
-  }
-  
-  &:active {
-    transform: scale(0.95);
-  }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10rpx); }
 }
 
 @keyframes pulse {
