@@ -6,6 +6,79 @@
 				"navigationStyle": "custom"
 			}
     },
+		{
+			"path": "pages/index/chatGPT",
+			"style": {
+				"navigationBarTitleText": "心理咨询"
+			}
+		},
+		{
+			"path": "pages/show/index",
+			"style": {
+				"navigationBarTitleText": "可视化mock"
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/questionnaire/look",
+			"style": {
+				"navigationBarTitleText": "查看问卷结果"
+			}
+		},
+		{
+			"path": "pages/my/aboutService",
+			"style": {
+				"navigationBarTitleText": "关于笑友"
+			}
+		},
+		{
+			"path": "pages/my/rankList",
+			"style": {
+				"navigationBarTitleText": "排行榜"
+			}
+		},
+		{
+			"path": "pages/my/helpService",
+			"style": {
+				"navigationBarTitleText": "帮助中心"
+			}
+		},
+		{
+			"path": "pages/my/customerChatService",
+			"style": {
+				"navigationBarTitleText": "智能客服"
+			}
+		},
+		{
+			"path": "pages/my/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/my/supportService",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/questionnaire/write",
+			"style": {
+				"navigationBarTitleText": "问卷填写"
+			}
+		},
+		{
+			"path": "pages/questionnaire/index",
+			"style": {
+				"navigationBarTitleText": "问卷"
+			}
+		},
     {
       "path": "pages/invitations/index",
       "style": {
@@ -41,7 +114,7 @@
 		"backgroundColor": "#ffffff",
 		"list": [
 			{
-				"pagePath": "pages/lists/index",
+				"pagePath": "pages/questionnaire/index",
 				"iconPath": "static/image/tarbar/index.png",
 				"selectedIconPath": "static/image/tarbar/index_selected.png",
 				"text": "清单"

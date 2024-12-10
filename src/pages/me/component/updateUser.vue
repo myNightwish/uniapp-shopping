@@ -61,10 +61,10 @@
 
 <script>
 import { reactive } from "vue";
-import { useMeStore } from "@/stores/me.store";
+import { useAuthStore } from "@/stores/auth";
 import { provincesInChina, userDefaultData } from "@/const";
 import { uniUploadFile } from "@/apis/uni.api";
-import { getStringWidth } from "@/utils/string";
+import { getStringWidth } from "@/utils/tools";
 import { useMutation } from "villus";
 import { getPostObjectParamsGQL, updateUserGQL } from "@/graphql/me.graphql";
 

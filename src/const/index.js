@@ -67,3 +67,8 @@ export const feedbackUrl = 'https://xh4u7d54le.feishu.cn/share/base/form/shrcntq
 export const sourceCodeUrl = 'https://github.com/Justin3go/xiaoyou-mp'
 
 export const wxMoney = '/static/wechatCode.jpg'
+
+export const chatType = {
+	customerChat: 0,
+	chatGPT: 1
+}
