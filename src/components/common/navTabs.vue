@@ -9,7 +9,16 @@
 <script setup>
 import { ref } from "@vue/reactivity";
 
-const props = defineProps();
+const props = defineProps({
+	tabs: {
+		type: Array,
+		default: () => [],
+	},
+	modelValue: {
+		type: String,
+		default: "",
+	},
+});
 const emit = defineEmits();
 
 const tabs = props.tabs;

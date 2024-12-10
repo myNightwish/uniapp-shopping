@@ -63,7 +63,7 @@
 import { reactive } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { provincesInChina, userDefaultData } from "@/const";
-import { uniUploadFile } from "@/apis/uni.api";
+import { uniUploadFile } from "@/api/uni.api";
 import { getStringWidth } from "@/utils/tools";
 import { useMutation } from "villus";
 import { getPostObjectParamsGQL, updateUserGQL } from "@/graphql/me.graphql";

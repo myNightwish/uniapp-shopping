@@ -10,6 +10,6 @@ export default defineConfig({
     uni(),
   ],
   compilerOptions: {
-    isCustomElement: tag => tag.startsWith('uni-') // 排除以 `uni-` 开头的自定义元素
+    isCustomElement: tag => (tag.startsWith('uni-') || tag.startsWith('qiun-error')), // 排除以 `uni-` 开头的自定义元素
   }
 })

@@ -129,15 +129,17 @@
 </template>
 
 <script setup>
-import { uniLogin } from "@/apis/uni.api";
+import { uniLogin } from "@/api/uni.api";
 import { reactive, ref } from "vue";
-import { useMeStore } from "@/stores/me.store";
-import quickEntryCard from "@/components/quickEntryCard.vue";
-import oneRowCard from "@/components/oneRowCard.vue";
+import { useAuthStore } from "@/stores/auth";
+import quickEntryCard from "@/components/common/quickEntryCard.vue";
+import oneRowCard from "@/components/common/oneRowCard.vue";
 import { getToken } from "@/utils/auth";
 import { userDefaultData } from "@/const";
 import { onShow, onLoad, onShareAppMessage } from "@dcloudio/uni-app";
 import { logoUrl, feedbackUrl, sourceCodeUrl } from "@/const";
+import UniIcons from '@/common/uni-icons/uni-icons.vue';
+
 // 直接使用 mock 数据替代 GraphQL 请求
 // import { useMutation } from "villus";
 // import { meGQL } from "@/graphql/me.graphql";
@@ -151,7 +153,7 @@ const mockUser = {
 };
 
 // 使用 Vuex Store 或者在组件内直接修改
-const meStore = useMeStore();
+const meStore = useAuthStore();
 
 const isLogin = ref(false);
 // 通过分享链接点击进入传递的参数
@@ -219,7 +221,7 @@ async function getUser() {
 
 function toUpdateUser() {
 	uni.navigateTo({
-		url: "/pages/me/updateUser",
+		url: "/pages/my/updateUser",
 	});
 }
 

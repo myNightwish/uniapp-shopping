@@ -66,13 +66,14 @@
 <script setup>
 import oneRowCard from "@/components/common/oneRowCard.vue";
 import { reactive } from "vue";
-import { useMeStore } from "@/stores/me.store";
+import { useAuthStore } from "@/stores/auth";
 import { ossHost, provincesInChina, userDefaultData } from "@/const";
-import { uniUploadFile } from "@/apis/uni.api";
+import { uniUploadFile } from "@/api/uni.api";
 import { isValidKey } from "@/utils/tools";
 import { getStringWidth } from "@/utils/tools";
+import UniIcons from '@/common/uni-icons/uni-icons.vue';
 
-const meStore = useMeStore();
+const meStore = useAuthStore();
 
 // 模拟用户数据（mock 数据）
 const mockUserData = {

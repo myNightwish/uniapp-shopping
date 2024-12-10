@@ -100,6 +100,7 @@ import empty from "@/components/common/empty.vue";
 import { onPullDownRefresh, onShow, onUnload } from "@dcloudio/uni-app";
 import { indexIcon1, indexIcon2, indexIcon3, indexIcon4 } from "@/const";
 import { getNews, setNews } from "@/utils/news";
+import UniIcons from '@/common/uni-icons/uni-icons.vue';
 
 const meStore = {
 	user: {
@@ -110,15 +111,16 @@ const meStore = {
 }; // Mock 用户数据
 
 // Mock 数据
-const mockFriendData = {
+const dataFriend = {
 	me: {
 		countAsFriend: 10,
 	},
 };
-// const mockOwnerData = {
-// 	me: {
-// 		countAsOwner: 5,
-// 	};
+const dataOwner = ref({
+	me: {
+		countAsOwner: 5,
+	}
+});
 const mockNewsData = [
 	{
 		id: "1",

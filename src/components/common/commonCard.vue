@@ -57,8 +57,8 @@ const props = defineProps({
 		default: "",
 	},
 	secondBtnData: {
-		type: String,
-		default: "",
+		type: Number,
+		default: 0,
 	}
 });
 const emit = defineEmits();

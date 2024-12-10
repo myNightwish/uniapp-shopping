@@ -114,7 +114,7 @@
 import { uniLogin, getUserProfile } from "@/api/uni.js";
 import { reactive, ref, watch } from "vue";
 import { useAuthStore } from "@/stores/auth.js";
-import quickEntryCard from "./component/quickEntryCard.vue";
+import quickEntryCard from "@/components/common/quickEntryCard.vue";
 import { getToken } from "@/utils/auth";
 import { onShow, onLoad, onShareAppMessage } from "@dcloudio/uni-app";
 import { logoUrl, feedbackUrl, sourceCodeUrl, userDefaultData } from "@/const";

@@ -3,14 +3,12 @@ import {
 } from "vue";
 import App from "./App.vue";
 import * as Pinia from 'pinia';
-import UniIcons from '@/common/uni-icons/uni-icons.vue';
 import { useAuthStore } from "@/stores/auth.js";
 import {getExpireInPayload, getToken, setToken} from "@/utils/auth.js";
 
 export function createApp() {
 	const app = createSSRApp(App);
 	app.use(Pinia.createPinia());
-	app.use('uni-icons', UniIcons) // 全局注册
 	return {
 		app,
 		Pinia, // 此处必须将 Pinia 返回
@@ -66,7 +64,6 @@ uni.addInterceptor("request", {
   fail(err) {
     uni.showToast({
       title: `网络请求错误`,
-      icon: "error",
       duration: 2000,
     });
   },
@@ -93,7 +90,6 @@ function redirectToLogin() {
     success: () => {
       uni.showToast({
         title: "登录凭证无效啦",
-        icon: "error",
         duration: 2000,
       });
     },

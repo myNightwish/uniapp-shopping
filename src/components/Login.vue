@@ -61,7 +61,7 @@ const handleLogin = async () => {
     password: password.value
   }).then(res => {
     authStore.setAuth(res);
-    router.push('/lists');
+    router.push('/index');
   }).catch(error=> {
     console.error('登录失败', error);
   })

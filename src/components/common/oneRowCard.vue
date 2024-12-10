@@ -16,10 +16,12 @@
 	</view>
 </template>
 <script setup>
+import UniIcons from '@/common/uni-icons/uni-icons.vue';
+
 const props = defineProps({
   showIcon: {
     type: Boolean,
-    required: true
+    default: true
   },
 	rightTextWidth: {
 		type: String,
