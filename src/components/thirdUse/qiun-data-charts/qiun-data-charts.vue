@@ -155,7 +155,9 @@
   </view>
 </template>
 
-<script>
+<script >
+import qiunLoading from '@/components/thirdUse/qiun-loading/qiun-loading.vue';
+import qiunError from '@/components/thirdUse/qiun-error/qiun-error.vue';
 import uChartsMp from '@/components/thirdUse/u-charts/u-charts.js';
 import cfu from '@/components/thirdUse/u-charts/config-ucharts.js';
 // #ifdef APP-VUE || H5
@@ -232,6 +234,10 @@ function debounce(fn, wait) {
 export default {
   name: 'qiun-data-charts',
   mixins: [uniCloud.mixinDatacom],
+  components: {
+    qiunLoading,
+    qiunError
+  },
   props: {
     type: {
       type: String,

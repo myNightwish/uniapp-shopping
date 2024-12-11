@@ -88,7 +88,7 @@
 			}
 		},
 		{
-			"path": "pages/my/index",
+			"path": "pages/me/index",
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
@@ -125,13 +125,6 @@
 				"navigationBarTitleText": "可视化"
 			}
     },
-    {
-      "path": "pages/me/index",
-			"style": {
-				"navigationStyle": "custom",
-				"navigationBarTitleText": "可视化"
-			}
-    },
 		{
       "path": "pages/chat/index",
       "style": {
@@ -148,7 +141,7 @@
 	"easycom": {
 		"autoscan": true,
 		"custom": {
-			"^uni-((?!(shadow-root|icons)).*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+			 "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
 		}
 	}
 }

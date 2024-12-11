@@ -4,6 +4,7 @@
 		<view v-if="activeTab === tabs[0]" class="completed-container">
 			<view class="questionnaire-ul" v-for="questionnaire in completed" :key="questionnaire.id">
 				<view class="questionnaire-li">
+					<!-- todo： 分享按钮 -->
 					<common-card
 						second-btn-type="share"
 						:second-btn-data="questionnaire.id"
@@ -38,11 +39,13 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, onMounted } from "vue";
-import navTabs from "@/components/common/navTabs.vue";
+import { ref, onMounted } from "vue";
+import NavTabs from "@/components/common/navTabs.vue";
 import CommonCard from "@/components/common/commonCard.vue";
 import empty from "@/components/common/empty.vue";
+import { useAuthStore } from "@/stores/auth.js";
 
+const meStore = useAuthStore();
 const activeTab = ref("已填");
 const tabs = ["已填", "未填"];
 
@@ -63,6 +66,7 @@ const mockAllQuestionnaires = [
 
 onMounted(() => {
 	// 使用 Mock 数据
+	// todo: 请求数据
 	completed.value = mockCompleted;
 	questionnaires.value = mockAllQuestionnaires;
 
@@ -73,10 +77,19 @@ onMounted(() => {
 
 function write(questionnaireId) {
 	console.log(`填写问卷 ID: ${questionnaireId}`);
+	const userId = meStore.user?.id;
+	uni.navigateTo({
+		url: `/pages/questionnaire/write?questionnaireId=${questionnaireId}&ownerId=${userId}&friendId=${userId}`,
+	});
 }
 
 function look(questionnaireId) {
 	console.log(`查看问卷 ID: ${questionnaireId}`);
+	const userId = meStore.user?.id;
+	// TODO 目前仅支持查看自己的，所以固定了friendId为自己，后续支持查看为朋友填写的
+	uni.navigateTo({
+		url: `/pages/questionnaire/look?questionnaireId=${questionnaireId}&ownerId=${userId}&friendId=${userId}`,
+	});
 }
 </script>
 

@@ -1,13 +1,15 @@
 <template>
 	<view class="nav-tabs-container">
 		<view v-for="tab in tabs">
-			<view class="tabs-item" :class="{ 'tabs-item-active': activeTab === tab }" @click="clickTab(tab)">{{ tab }}</view>
+			<view class="tabs-item"
+			:class="{ 'tabs-item-active': activeTab === tab }"
+			@click="clickTab(tab)">{{ tab }}</view>
 		</view>
 	</view>
 	<view class="nav-placeholder"></view>
 </template>
 <script setup>
-import { ref } from "@vue/reactivity";
+import { ref, defineEmits } from "vue";
 
 const props = defineProps({
 	tabs: {
@@ -19,7 +21,7 @@ const props = defineProps({
 		default: "",
 	},
 });
-const emit = defineEmits();
+const emit = defineEmits(["update:modelValue"]);
 
 const tabs = props.tabs;
 const activeTab = ref(props.modelValue);
@@ -39,7 +41,6 @@ function clickTab(tab) {
 	align-items: center;
 	position: fixed;
 	top: -1px;
-
 	z-index: 1000;
 
 	.tabs-item {

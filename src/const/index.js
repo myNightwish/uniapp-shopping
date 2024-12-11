@@ -46,18 +46,41 @@ export const provincesInChina = [
 
 export const logoUrl = "/static/logo.jpg";
 export const ossHost = "https://oss.justin3go.com";
-export const bannerUrl1 = "https://oss.justin3go.com/banners/banner1.jpg";
+export const banners = [
+	"https://gd-hbimg.huaban.com/fcf6e09f17da2ec355206b468fa345d876ee7b5f17c47-2ypoiV_fw480webp",
+	"https://gd-hbimg.huaban.com/43ab6070b44b2f9ed930f89d2fd47c74f30d30a94cb42-U4KHsc_fw480webp"
+];
 export const writerUrl = '/static/image/questionnairePage/writer.png'
 export const questionnaireUrl = '/static/image/questionnairePage/questionnaire.png'
 export const emptyUrl = '/static/image/noData.png'
 
 // icons
-export const indexIcon1 = '/static/image/icons/questionnaireLook.png'
-export const indexIcon2 = '/static/image/icons/aboutMe.png'
-export const indexIcon3 = '/static/image/icons/aboutOther.png'
-export const indexIcon4 = '/static/image/icons/qa.png'
-
-// rankList
+export const homeIconsList = [
+	{
+		icon: '/static/image/homeIcons/questionnaireLook.png',
+		name: '查看问卷',
+		path: '/pages/questionnaire/index',
+		isTab: true
+	},
+	{
+		icon: '/static/image/homeIcons/aboutMe.png',
+		name: '关于自己',
+		path: '/pages/my/rankList?option=me',
+		isTab: false
+	},
+	{
+		icon: '/static/image/homeIcons/aboutOther.png',
+		name: '关于他人',
+		path: '/pages/my/rankList?option=other',
+		isTab: false
+	},
+	{
+		icon: '/static/image/homeIcons/qa.png',
+		name: '心理问答',
+		path: '/pages/index/chatGPT',
+		isTab: false
+	}
+]
 
 export const firstRank = '/static/image/list/first.png'
 export const secondRank = '/static/image/list/second.png'

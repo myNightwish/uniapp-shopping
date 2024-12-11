@@ -59,7 +59,15 @@ const props = defineProps({
 	secondBtnData: {
 		type: Number,
 		default: 0,
-	}
+	},
+	description: {
+		type: String,
+		default: "",
+	},
+	title: {
+		type: String,
+		default: "",
+	},
 });
 const emit = defineEmits();
 const btnContainerWidth = props.secondBtn ? "170px" : "80px";
@@ -89,7 +97,8 @@ function firstBtnClick() {
 }
 
 function secondBtnClick() {
-	emit("secondBtnClick");
+	console.log('secondBtnType-', props.secondBtnType)
+	emit("secondBtnClick", props.secondBtnType);
 }
 </script>
 <style lang="scss" scoped>

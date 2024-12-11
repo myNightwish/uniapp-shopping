@@ -25,7 +25,7 @@ const mockQuestionnaires = [
 	{ id: "2", title: "问卷二", type: 1 },
 	{ id: "3", title: "问卷三", type: 0 }
 ];
-
+// todo： mock 数据初始化替换
 const questionnaires = ref(mockQuestionnaires);
 const range = ref(
 	mockQuestionnaires.map((item) => ({
@@ -57,7 +57,6 @@ const showType = ref(-1);
 // });
 
 onShow(() => {
-	// 直接使用 mock 数据初始化
 	showType.value = questionnaires.value.length ? 0 : -1;
 });
 

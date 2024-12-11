@@ -1,6 +1,5 @@
 <template>
-	{{ isLogin }}
-		<view v-if="isLogin" class="me-container">
+		<view class="me-container">
 			<view class="top-card">
 				<view class="user-info">
 					<view class="info">
@@ -103,11 +102,7 @@
 				></uni-popup-dialog>
 			</uni-popup>
 		</view>
-		<view v-if="!isLogin" class="no-login">
-			<view class="login-button-container">
-				<button @click="login" class="login-button">一键登录/注册</button>
-			</view>
-		</view>
+		<loginBtn :isOpen="isOpen && !isLogin" @login="login" @cancel="cancelLogin"></loginBtn>
 </template>
 
 <script setup>
@@ -119,11 +114,12 @@ import { getToken } from "@/utils/auth";
 import { onShow, onLoad, onShareAppMessage } from "@dcloudio/uni-app";
 import { logoUrl, feedbackUrl, sourceCodeUrl, userDefaultData } from "@/const";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
+import loginBtn from "./component/loginBtn.vue";
 
 const meStore = useAuthStore();
 const isLogin = ref(false);
 const infoPopup = ref();
-
+const isOpen = ref(true);
 watch(
   () => [meStore.user, getToken("refreshToken")],
   ([user, refreshToken]) => {
@@ -143,7 +139,13 @@ async function login() {
 	meStore.$patch({ inLogin: false });
 	isLogin.value = meStore.user?.id && getToken("refreshToken") !== "";
 	console.log("is login: ", isLogin.value);
+	// todo； 成功后关闭
+	isOpen.value = false;
+
 }
+const cancelLogin = () => {
+	isOpen.value = false;
+};
 
 function toUpdateUser() {
 	// uni.navigateTo({
@@ -179,6 +181,7 @@ function customerChatService() {
 	// 	url: "/pages/me/chat",
 	// });
 }
+
 
 function supportService() {
 	uni.navigateTo({
@@ -344,19 +347,6 @@ onShareAppMessage(() => {
 			margin-top: 16px;
 			text-align: left;
 			color: $theme-color-gray;
-		}
-	}
-
-	.login-button-container {
-		padding-bottom: 50px;
-		.login-button {
-			color: #ffffff;
-			background-color: $theme-color-lighter-2;
-			height: 60px;
-			width: 90vw;
-			line-height: 60px;
-			text-align: center;
-			border-radius: 30px;
 		}
 	}
 }

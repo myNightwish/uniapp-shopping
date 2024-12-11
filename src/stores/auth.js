@@ -4,7 +4,11 @@ import { userApi } from '@/api/user.js';  // 引入封装的 API
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
+    user: {
+      avatarUrl: "https://gd-hbimg.huaban.com/03029a471d8657ae8f82cd7770e3a82a4b064c5418b31d-LIlg9R_fw480webp",
+      nickName: "Mock User",
+      id: "12345678",
+    },
     token: null,
     inLogin: false,  // 是否正在登录
   }),

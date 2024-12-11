@@ -1,12 +1,14 @@
 <template>
 	<view class="index-container">
+		<!-- 首页banner -->
 		<view class="banner-container">
 			<swiper class="swiper" circular :indicator-dots="true" :autoplay="true" :interval="2000" :duration="500">
-				<swiper-item>
-					<image style="width: 100vw" mode="widthFix" :src="bannerUrl1"></image>
+				<swiper-item v-for="(banner, index) in banners" :key="index">
+					<image style="width: 100vw" mode="widthFix" :src="banner"></image>
 				</swiper-item>
 			</swiper>
 		</view>
+		<!-- 首页身份信息 -->
 		<view class="user-container">
 			<view class="user-left">
 				<view class="avatar">
@@ -35,34 +37,15 @@
 				</view>
 			</view>
 		</view>
-
+		<!-- 首页金刚位 -->
 		<view class="common-container">
-			<view class="common-item">
-				<view class="common-icon" @click="toQuestionnaire">
-					<image style="height: 45px; width: 45px" :src="indexIcon1"></image>
+			<view v-for="(item, index) in homeIconsList" :key="index" class="common-item">
+				<view class="common-icon" @click="toJump(item.path, item.isTab)">
+					<image style="height: 45px; width: 45px" :src="item.icon"></image>
 				</view>
-				<view class="common-title">查看问卷</view>
-			</view>
-			<view class="common-item">
-				<view class="common-icon" @click="toRankListMe">
-					<image style="height: 45px; width: 45px" :src="indexIcon2"></image>
-				</view>
-				<view class="common-title">关于自己</view>
-			</view>
-			<view class="common-item">
-				<view class="common-icon" @click="toRankListOther">
-					<image style="height: 45px; width: 45px" :src="indexIcon3"></image>
-				</view>
-				<view class="common-title">关于他人</view>
-			</view>
-			<view class="common-item">
-				<view class="common-icon" @click="toQA">
-					<image style="height: 45px; width: 45px" :src="indexIcon4"></image>
-				</view>
-				<view class="common-title">心理问答</view>
+				<view class="common-title">{{ item.name }}</view>
 			</view>
 		</view>
-
 		<view class="news-title"> 消息中心 </view>
 		<view class="news-container" v-for="item in news" :key="item.id">
 			<one-row-card>
@@ -93,22 +76,16 @@
 </template>
 
 <script setup>
-import { ref, watch} from "vue";
-import { userDefaultData, bannerUrl1 } from "@/const";
-import oneRowCard from "@/components/common/oneRowCard.vue";
+import { ref} from "vue";
+import { userDefaultData, banners, homeIconsList } from "@/const";
+import OneRowCard from "@/components/common/oneRowCard.vue";
 import empty from "@/components/common/empty.vue";
 import { onPullDownRefresh, onShow, onUnload } from "@dcloudio/uni-app";
-import { indexIcon1, indexIcon2, indexIcon3, indexIcon4 } from "@/const";
 import { getNews, setNews } from "@/utils/news";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
+import { useAuthStore } from "@/stores/auth.js";
 
-const meStore = {
-	user: {
-		avatarUrl: "https://mock-avatar-url.com/avatar.png",
-		nickName: "Mock User",
-		id: "12345678",
-	},
-}; // Mock 用户数据
+const meStore = useAuthStore();
 
 // Mock 数据
 const dataFriend = {
@@ -143,6 +120,7 @@ onShow(() => {
 		console.log("Mock: 获取用户数据");
 	}
 	console.log("Mock: 获取问卷数据");
+	// todo： 拉取消息接口
 	news.value = mockNewsData;
 });
 
@@ -170,22 +148,20 @@ function closeNews() {
 
 function confirmNews() {
 	const deleteItem = news.value.findIndex((item) => item.id === curNewsId.value);
+	// todo： 消息删除后，需要进行更新
 	news.value.splice(deleteItem, 1);
 	newsPopup.value.close();
 }
 
 // 页面跳转
-function toQuestionnaire() {
-	setTimeout(() => uni.switchTab({ url: "/pages/questionnaire/index" }), 500);
-}
-function toRankListMe() {
-	setTimeout(() => uni.navigateTo({ url: "/pages/my/rankList?option=me" }), 500);
-}
-function toRankListOther() {
-	setTimeout(() => uni.navigateTo({ url: "/pages/my/rankList?option=other" }), 500);
-}
-function toQA() {
-	setTimeout(() => uni.navigateTo({ url: "/pages/index/chatGPT" }), 500);
+function toJump(url, isTab) {
+	setTimeout(() => {
+		if(isTab) {
+			uni.switchTab({ url})
+		} else {
+			uni.navigateTo({ url })
+		}
+	}, 500);
 }
 </script>
 

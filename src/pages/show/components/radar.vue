@@ -57,7 +57,6 @@ import empty from "@/components/common/empty.vue";
 import { userDefaultData } from "@/const";
 import { omitLongString } from "@/utils/tools";
 
-
 const props = defineProps();
 
 const meStore = useAuthStore();
@@ -129,28 +128,21 @@ onBeforeMount(() => {
 
 // Mock 数据替代 API 请求
 function mockGetFriendListAsOwner() {
+	// todo：请求数据
 	const mockData = [
 		{
 			friend: {
 				id: "1",
-				avatarUrl: "https://example.com/avatar1.png",
-				nickName: "好友1",
+				avatarUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoNunyip9cyunWDmNIZyvdDz38ocdgHgC_pXNe31lArql_ORp4MXv7RcA&s",
+				nickName: "EE",
 			},
 			visualization: '{"neuroticism": 60, "extraversion": 80, "openness": 75, "agreeableness": 70, "conscientiousness": 85}',
 		},
 		{
 			friend: {
-				id: "2",
-				avatarUrl: "https://example.com/avatar2.png",
-				nickName: "好友2",
-			},
-			visualization: '{"neuroticism": 55, "extraversion": 70, "openness": 65, "agreeableness": 60, "conscientiousness": 80}',
-		},
-		{
-			friend: {
 				id: "3",
-				avatarUrl: "https://example.com/avatar3.png",
-				nickName: "好友3",
+				avatarUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGWkIiW7S7wP_VamhtXl5qAshTxAuNtD4N8G3zYBMWMa2QHdClHugs9w&s",
+				nickName: "萌萌",
 			},
 			visualization: '{"neuroticism": 50, "extraversion": 65, "openness": 60, "agreeableness": 55, "conscientiousness": 70}',
 		},
