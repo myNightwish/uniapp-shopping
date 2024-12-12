@@ -10,7 +10,7 @@
 		<view class="top-card-placeholder"></view>
 		<view class="questions-container" v-for="(question, qIndex) in questions" :key="question.id">
 			<view class="question-item">
-				<view class="description">{{ `${qIndex + 1}. ${question.description}` }}</view>
+				<view class="description">{{ `${qIndex + 1}. ${question.text}` }}</view>
 				<view class="options">
 					<radio-group @change="radioChange">
 						<label class="radio" v-for="(option, oIndex) in question.options" :key="option">
@@ -18,7 +18,7 @@
 								<radio
 									color="#0256FF"
 									:value="`${qIndex + 1}#${oIndex + 1}`"
-									:checked="oIndex + 1 === result[qIndex + 1]"
+									:checked="oIndex === answers[qIndex]"
 								/>
 							</view>
 							<view>{{ option }}</view>
@@ -36,24 +36,7 @@
 <script setup>
 import { onLoad } from "@dcloudio/uni-app";
 import { reactive, ref } from "vue";
-
-// Mock 数据
-const mockQuestionnaire = {
-	title: "模拟问卷标题",
-	description: "这是一个模拟问卷描述",
-	questions: [
-		{
-			id: 1,
-			description: "你最喜欢的颜色是什么？",
-			options: ["红色", "绿色", "蓝色", "黄色"],
-		},
-		{
-			id: 2,
-			description: "你通常每天睡几个小时？",
-			options: ["少于5小时", "5-7小时", "7-9小时", "多于9小时"],
-		},
-	],
-};
+import { questionnaireApi } from "@/api/questionnaire";
 
 const params = reactive({
 	questionnaireId: "",
@@ -66,7 +49,7 @@ const questionnaire = reactive({
 	description: "",
 });
 
-const result = ref([]);
+const answers = ref([]);
 
 onLoad(async (option) => {
 	if (!option?.questionnaireId || !option?.ownerId) {
@@ -81,36 +64,37 @@ onLoad(async (option) => {
 	}
 	params.questionnaireId = option?.questionnaireId;
 	params.ownerId = option?.ownerId;
-	params.friendId = option?.friendId || "mock-friend-id";
-	await getMockQuestions();
+	params.friendId = option?.friendId;
+	await getQueryQuestions(params);
 });
 
-async function getMockQuestions() {
-	// 模拟获取问卷数据
-	const data = mockQuestionnaire;
-
-	questionnaire.title = data.title;
-	questionnaire.description = data.description;
-	questions.value = data.questions.map((item) => ({
-		...item,
-		options: item.options,
-	}));
-	console.log("Mock questions: ", questions.value);
+async function getQueryQuestions(params= {}) {
+	questionnaireApi.queryQuestionnaire(params).then((data) => {
+		questionnaire.title = data.title;
+		questionnaire.description = data.description;
+		questions.value = data.questions.map((item) => ({
+			...item,
+			title: item.title,
+			options: item.options,
+		}));
+ });
 }
 
 function radioChange(e) {
 	const [qIndex, oIndex] = e.detail.value.split("#");
-	result.value[qIndex] = oIndex;
+	const answer = questions.value[qIndex - 1].options[oIndex - 1];
+	answers.value[qIndex -1 ] = {
+		questionId: qIndex - 1,
+		answer,
+	};
 }
 
 async function submit() {
-	console.log("result: ", result.value);
+	console.log("result: ", answers.value);
 	const len = questions.value.length;
-	const resultObj = {};
 
-	for (let i = 1; i < len + 1; i++) {
-		const item = result.value[i];
-		if (item === undefined) {
+	for (let i = 0; i < len; i++) {
+		if (answers.value[i] === undefined) {
 			uni.showToast({
 				title: `NO.${i}题目未填写`,
 				icon: "error",
@@ -118,17 +102,22 @@ async function submit() {
 			});
 			return;
 		}
-		resultObj[i] = item;
 	}
+	console.log('answers--', answers.value)
 
-	console.log("Mock submit result: ", JSON.stringify(resultObj));
-	uni.showToast({
-		title: "提交成功",
-		icon: "success",
-		duration: 2000,
-	});
-	uni.navigateBack({
-		delta: 1,
+	questionnaireApi.submitQuestionnaire({
+		questionnaireId: +params.questionnaireId,
+		answers: answers.value
+	}).then(data => {
+		console.log("submit result: ", data);
+		uni.showToast({
+			title: "提交成功",
+			icon: "success",
+			duration: 2000,
+		});
+		uni.navigateBack({
+			delta: 1,
+		});
 	});
 }
 </script>

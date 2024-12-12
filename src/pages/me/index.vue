@@ -102,7 +102,7 @@
 				></uni-popup-dialog>
 			</uni-popup>
 		</view>
-		<loginBtn :isOpen="isOpen && !isLogin" @login="login" @cancel="cancelLogin"></loginBtn>
+		<!-- <loginBtn :isOpen="isOpen && !isLogin" @login="login" @cancel="cancelLogin"></loginBtn> -->
 </template>
 
 <script setup>

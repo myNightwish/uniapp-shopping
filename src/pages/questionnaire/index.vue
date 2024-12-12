@@ -44,39 +44,28 @@ import NavTabs from "@/components/common/navTabs.vue";
 import CommonCard from "@/components/common/commonCard.vue";
 import empty from "@/components/common/empty.vue";
 import { useAuthStore } from "@/stores/auth.js";
-
+import {questionnaireApi} from "@/api/questionnaire";
 const meStore = useAuthStore();
 const activeTab = ref("已填");
 const tabs = ["已填", "未填"];
 
-const questionnaires = ref([]);
 const completed = ref([]);
 const noCompleted = ref([]);
 
-// Mock 数据
-const mockCompleted = [
-	{ id: 1, title: "已完成问卷1", description: "这是已完成问卷1的描述" },
-	{ id: 2, title: "已完成问卷2", description: "这是已完成问卷2的描述" },
-];
-const mockAllQuestionnaires = [
-	{ id: 1, title: "问卷1", description: "这是问卷1的描述" },
-	{ id: 2, title: "问卷2", description: "这是问卷2的描述" },
-	{ id: 3, title: "问卷3", description: "这是问卷3的描述" },
-];
-
 onMounted(() => {
-	// 使用 Mock 数据
-	// todo: 请求数据
-	completed.value = mockCompleted;
-	questionnaires.value = mockAllQuestionnaires;
-
-	// 计算未完成问卷
-	const idSet = new Set(mockCompleted.map((item) => item.id));
-	noCompleted.value = mockAllQuestionnaires.filter((item) => !idSet.has(item.id));
+	questionnaireApi.getQuestionnaireList().then((res) => {
+		// 已完成问卷:status === 1
+		res.forEach((item) => {
+			if (item.status === 1) {
+				completed.value.push(item.questionnaire_template);
+			} else {
+				noCompleted.value.push(item.questionnaire_template);
+			}
+		});
+	});
 });
 
 function write(questionnaireId) {
-	console.log(`填写问卷 ID: ${questionnaireId}`);
 	const userId = meStore.user?.id;
 	uni.navigateTo({
 		url: `/pages/questionnaire/write?questionnaireId=${questionnaireId}&ownerId=${userId}&friendId=${userId}`,
