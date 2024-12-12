@@ -18,7 +18,7 @@
 								<radio
 									color="#0256FF"
 									:value="`${qIndex + 1}#${oIndex + 1}`"
-									:checked="oIndex === answers[qIndex]"
+									:checked="oIndex === answers[qIndex] || question.answer === option"
 								/>
 							</view>
 							<view>{{ option }}</view>
