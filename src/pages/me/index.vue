@@ -210,7 +210,7 @@ function moreService() {
 onShareAppMessage(() => {
 	return {
 		title: "笑友小程序",
-		path: "/pages/lists/index",
+		path: "/pages/index/index",
 	};
 });
 </script>

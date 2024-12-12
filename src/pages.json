@@ -24,7 +24,7 @@
 				"text": "可视化"
 			},
 			{
-				"pagePath": "pages/my/index",
+				"pagePath": "pages/me/index",
 				"iconPath": "static/image/tarbar/me.png",
 				"selectedIconPath": "static/image/tarbar/me_selected.png",
 				"text": "我的"
@@ -39,12 +39,6 @@
 				"enablePullDownRefresh": true
 			}
 		},
-    {
-      "path": "pages/lists/index",
-			"style": {
-				"navigationBarTitleText": "表单"
-			}
-    },
 		{
 			"path": "pages/index/chatGPT",
 			"style": {
@@ -117,14 +111,6 @@
 				"navigationBarTitleText": "问卷"
 			}
 		},
-    {
-      "path": "pages/invitations/index",
-      "style": {
-				"navigationStyle": "custom",
-				"enablePullDownRefresh": true,
-				"navigationBarTitleText": "可视化"
-			}
-    },
 		{
       "path": "pages/chat/index",
       "style": {
