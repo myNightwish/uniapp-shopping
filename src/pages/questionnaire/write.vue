@@ -12,18 +12,26 @@
 			<view class="question-item">
 				<view class="description">{{ `${qIndex + 1}. ${question.text}` }}</view>
 				<view class="options">
-					<radio-group @change="radioChange">
+					<radio-group v-if="Array.isArray(question.options)" @change="radioChange">
 						<label class="radio" v-for="(option, oIndex) in question.options" :key="option">
 							<view>
 								<radio
 									color="#0256FF"
 									:value="`${qIndex + 1}#${oIndex + 1}`"
-									:checked="oIndex === answers[qIndex] || question.answer === option"
+									:checked="oIndex === answers[qIndex]"
 								/>
 							</view>
 							<view>{{ option }}</view>
 						</label>
 					</radio-group>
+					<!-- 否则显示文本输入框 -->
+					<input 
+						v-else 
+						type="text" 
+						@input="(e) => textInputChange(e, qIndex)"
+						placeholder="请输入内容"
+						class="text-input"
+					/>
 				</view>
 			</view>
 		</view>
@@ -72,23 +80,24 @@ async function getQueryQuestions(params= {}) {
 	questionnaireApi.queryQuestionnaire(params).then((data) => {
 		questionnaire.title = data.title;
 		questionnaire.description = data.description;
-		questions.value = data.questions.map((item) => ({
-			...item,
-			title: item.title,
-			options: item.options,
-		}));
+		questions.value = data.questions;
  });
 }
 
 function radioChange(e) {
 	const [qIndex, oIndex] = e.detail.value.split("#");
 	const answer = questions.value[qIndex - 1].options[oIndex - 1];
-	answers.value[qIndex -1 ] = {
+	answers.value[qIndex -1] = {
 		questionId: qIndex - 1,
 		answer,
 	};
 }
-
+function textInputChange(e, qIdx) {
+	answers.value[qIdx] = {
+		questionId: qIdx,
+		answer: e.detail.value || ''
+	};
+}
 async function submit() {
 	console.log("result: ", answers.value);
 	const len = questions.value.length;
@@ -180,5 +189,21 @@ async function submit() {
 		text-align: center;
 		border-radius: 30px;
 	}
+}
+.text-input {
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 8px 10px;
+	height: 56px;
+	line-height: 56px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box; /* 确保 padding 不影响宽度 */
+  transition: border-color 0.3s ease;
+}
+
+.text-input:focus {
+  border-color: $theme-color-lighter-5; /* 聚焦时边框颜色 */
+  outline: none;        /* 去除默认高亮 */
 }
 </style>

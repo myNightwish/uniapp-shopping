@@ -1,10 +1,8 @@
 <template>
   <view class="chat-container">
     <!-- 顶部状态栏 -->
-    <image class="background-image" src="/static/image/avatar/bg.webp" mode="aspectFill" />
-    <!-- Chat Content -->
+    <!-- <image class="background-image" src="/static/image/avatar/bg.webp" mode="aspectFill" /> -->
     <view class="chat-content">
-
     <!-- 聊天消息列表 -->
     <scroll-view 
       class="chat-list" 
@@ -30,38 +28,36 @@
           <text class="iconfont icon-arrow-down" />
         </view>
       </view>
-    </scroll-view>
-
-    <!-- 输入区域 -->
-    <view class="input-area" :class="{ 'input-focus': isInputFocused }">
-      <view class="input-wrapper">
+    </scroll-view>    <!-- 输入区域 -->
+    <view class="bottom-input" :class="{ 'input-focus': isInputFocused }">
+      <view class="textarea-container">
         <textarea
           v-model="inputMessage"
           class="input-box"
           :disabled="isWaitingResponse"
           :focus="isInputFocused"
           placeholder="输入你的问题..."
-          :maxlength="1000"
+          auto-height
+          confirm-type="send"
+          fixed="true"  :maxlength="1000"
           :cursor-spacing="20"
           @focus="onInputFocus"
           @blur="onInputBlur"
           @confirm="sendMessage"
-          auto-height
         />
-          <text class="char-count" :class="{ 'near-limit': inputMessage.length > 900 }">
+          <!-- <text class="char-count" :class="{ 'near-limit': inputMessage.length > 900 }">
             {{ inputMessage.length }}/1000
-          </text>
+          </text> -->
       </view>
-      
       <button 
-        class="send-btn" 
+        class="send-btn"
         :disabled="!canSend"
         :class="{ 'sending': isWaitingResponse }"
         @tap="sendMessage"
-      >
-        <text class="iconfont" :class="isWaitingResponse ? 'icon-loading' : 'icon-send'" />
+      >发送
+        <!-- <text class="iconfont" :class="isWaitingResponse ? 'icon-loading' : 'icon-send'">发送</text> -->
       </button>
-      </view>
+    </view>
     </view>
   </view>
 </template>
@@ -286,54 +282,6 @@ onMounted(() => {
   flex: 1;
 }
 
-.input-area {
-  display: flex;
-  padding: 20rpx;
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  
-  .input-wrapper {
-    flex: 1;
-    margin-right: 20rpx;
-    
-    .input-box {
-      width: 100%;
-      min-height: 72rpx;
-      padding: 10rpx 20rpx;
-      font-size: 28rpx;
-      line-height: 1.5;
-      background-color: #fff;
-      border-radius: 36rpx;
-      box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
-    }
-  }
-  
-  .send-btn {
-    width: 72rpx;
-    height: 72rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #FF9D6C, #FF5E62);
-    border-radius: 50%;
-    box-shadow: 0 4rpx 10rpx rgba(255, 94, 98, 0.3);
-    transition: all 0.3s;
-    
-    &:active {
-      transform: scale(0.95);
-    }
-    
-    &.sending {
-      animation: pulse 1s infinite;
-    }
-    
-    .iconfont {
-      color: #fff;
-      font-size: 36rpx;
-    }
-  }
-}
-
 @keyframes bounce {
   from { transform: translateY(0); }
   to { transform: translateY(-10rpx); }
@@ -344,4 +292,38 @@ onMounted(() => {
   50% { transform: scale(0.95); }
   100% { transform: scale(1); }
 }
+
+.bottom-input {
+		display: flex;
+    align-items: center;
+    justify-content: space-between;
+		position: fixed;
+		bottom: 0;
+    left: 0;
+    right: 0;
+		background-color: #fbfbfb;
+		padding: 20px 12px;
+		box-shadow: 0px -10px 30px #eeeeee;
+		.textarea-container {
+      width: calc(100vw - 100px);
+      flex: 1;
+			background-color: #ffffff;
+			margin-right: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0px -10px 30px #eeeeee;
+			textarea {
+				width: 100%;
+				background-color: #ffffff;
+			}
+		}
+    .send-btn {
+      width: 70px;
+      height: 40px;
+      line-height: 34px;
+      background-color: #ffffff;
+      border: 3px solid #0256ff;
+      color: #0256ff;
+    }
+	}
 </style>

@@ -97,7 +97,6 @@ function firstBtnClick() {
 }
 
 function secondBtnClick() {
-	console.log('secondBtnType-', props.secondBtnType)
 	emit("secondBtnClick", props.secondBtnType);
 }
 </script>
