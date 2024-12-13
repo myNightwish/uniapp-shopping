@@ -14,12 +14,12 @@
 				<view class="avatar">
 					<image
 						style="height: 60px; width: 60px; border-radius: 30px"
-						:src="meStore.user?.avatarUrl || userDefaultData.avatarUrl"
+						:src="meStore.user.avatarUrl || userDefaultData.avatarUrl"
 					></image>
 				</view>
 				<view class="info">
-					<view class="nick-name">{{ meStore.user?.nickName || userDefaultData.nickName }}</view>
-					<view class="id">{{ meStore.user?.id || userDefaultData.id }}</view>
+					<view class="nick-name">昵称：{{ meStore.user?.nickName || userDefaultData.nickName }}</view>
+					<view class="id">id编号：{{ meStore.user?.openid || userDefaultData.id }}</view>
 				</view>
 			</view>
 			<view class="user-right">

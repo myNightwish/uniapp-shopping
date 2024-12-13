@@ -6,10 +6,10 @@
 						<image
 							class="avatar"
 							style="height: 60px; width: 60px; border-radius: 50%"
-							:src="userDefaultData.avatarUrl"
+							:src="meStore.user.avatarUrl || userDefaultData.avatarUrl"
 						></image>
 						<view class="text-info">
-							<view class="nick-name">{{ meStore.user?.nickname || userDefaultData.nickName }}</view>
+							<view class="nick-name">昵称：{{ meStore.user?.nickName || userDefaultData.nickName }}</view>
 						</view>
 					</view>
 					<view class="icon" @click="toUpdateUser">
@@ -25,14 +25,14 @@
 							</template>
 						</quick-entry-card>
 					</view>
-					<!-- <view @click="toRankList('other')">
+					<view @click="toRankList('other')">
 						<quick-entry-card>
 							<template #title>关于他人</template>
 							<template #icon>
 								<uni-icons type="staff" size="40" color="#FFFFFF"></uni-icons>
 							</template>
 						</quick-entry-card>
-					</view> -->
+					</view>
 				</view>
 			</view>
 			<view class="service-card">
@@ -102,7 +102,7 @@
 				></uni-popup-dialog>
 			</uni-popup>
 		</view>
-		<!-- <loginBtn :isOpen="isOpen && !isLogin" @login="login" @cancel="cancelLogin"></loginBtn> -->
+		<loginBtn :isOpen="isOpen && !isLogin" @login="login" @cancel="cancelLogin"></loginBtn>
 </template>
 
 <script setup>
@@ -131,55 +131,52 @@ watch(
 async function login() {
 	const userInfo = await getUserProfile();
 	meStore.$patch({ user: userInfo });
-	console.log("get user info: ", userInfo);
 	const { code } = await uniLogin("weixin");
 
 	meStore.$patch({ inLogin: true });
 	await meStore.loginAndAutoSignUp(code, userInfo);
 	meStore.$patch({ inLogin: false });
 	isLogin.value = meStore.user?.id && getToken("refreshToken") !== "";
-	console.log("is login: ", isLogin.value);
 	// todo； 成功后关闭
 	isOpen.value = false;
-
 }
 const cancelLogin = () => {
 	isOpen.value = false;
 };
 
 function toUpdateUser() {
-	// uni.navigateTo({
-	// 	url: "/pages/me/updateUser",
-	// });
+	uni.navigateTo({
+		url: "/pages/me/updateUser",
+	});
 	console.log('暂时关闭～');
 }
 
 function toRankList(option) {
 	console.log('暂时关闭～');
-	// uni.navigateTo({
-	// 	url: `/pages/rankList?type=${option}`,
-	// });
+	uni.navigateTo({
+		url: `/pages/rankList?type=${option}`,
+	});
 }
 
 function helpService() {
 	console.log('暂时关闭～');
-	// uni.navigateTo({
-	// 	url: "/pages/me/help",
-	// });
+	uni.navigateTo({
+		url: "/pages/me/help",
+	});
 }
 
 function feedbackService() {
 	console.log('暂时关闭～');
-	// uni.navigateTo({
-	// 	url: feedbackUrl,
-	// });
+	uni.navigateTo({
+		url: feedbackUrl,
+	});
 }
 
 function customerChatService() {
 	console.log('暂时关闭～');
-	// uni.navigateTo({
-	// 	url: "/pages/me/chat",
-	// });
+	uni.navigateTo({
+		url: "/pages/me/chat",
+	});
 }
 
 
@@ -207,12 +204,12 @@ function moreService() {
 	});
 }
 
-onShareAppMessage(() => {
-	return {
-		title: "笑友小程序",
-		path: "/pages/index/index",
-	};
-});
+// onShareAppMessage(() => {
+// 	return {
+// 		title: "笑友小程序",
+// 		path: "/pages/index/index",
+// 	};
+// });
 </script>
 
 <style lang="scss" scoped>

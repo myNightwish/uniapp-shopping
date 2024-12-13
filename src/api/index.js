@@ -3,7 +3,8 @@ import { useAuthStore } from '@/stores/auth';
 // 创建一个请求方法封装
 const request = (options) => {
   const token = uni.getStorageSync('token'); // 假设 token 存储在 localStorage
-  const baseURL = 'http://localhost:7001'; // 你的 API 基础 URL
+  // const baseURL = 'http://localhost:7001'; // 你的 API 基础 URL
+  const baseURL = 'http://192.168.31.253:7001'; // 你的 API 基础 URL
 
   return new Promise((resolve, reject) => {
     uni.request({

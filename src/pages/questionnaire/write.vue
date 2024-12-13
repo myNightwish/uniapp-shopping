@@ -49,7 +49,7 @@ import { questionnaireApi } from "@/api/questionnaire";
 const params = reactive({
 	questionnaireId: "",
 	ownerId: "",
-	friendId: "",
+	shareId: "",
 });
 const questions = ref([]);
 const questionnaire = reactive({
@@ -72,7 +72,7 @@ onLoad(async (option) => {
 	}
 	params.questionnaireId = option?.questionnaireId;
 	params.ownerId = option?.ownerId;
-	params.friendId = option?.friendId;
+	params.shareId = option?.shareId;
 	await getQueryQuestions(params);
 });
 
@@ -112,13 +112,12 @@ async function submit() {
 			return;
 		}
 	}
-	console.log('answers--', answers.value)
 
 	questionnaireApi.submitQuestionnaire({
 		questionnaireId: +params.questionnaireId,
-		answers: answers.value
+		answers: answers.value,
+		shareId: +params.shareId || "",
 	}).then(data => {
-		console.log("submit result: ", data);
 		uni.showToast({
 			title: "提交成功",
 			icon: "success",

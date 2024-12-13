@@ -19,7 +19,7 @@ export const questionnaireApi = {
     return response.data;
   },
 
-  // 用户获取
+  // 用户查询
   async queryQuestionnaire(params = {}) {
     // 构建查询字符串
     const queryString = Object.keys(params)
@@ -35,12 +35,20 @@ export const questionnaireApi = {
   },
 
   // 用户提交
-  async submitQuestionnaire({ questionnaireId, answers }) {
+  async submitQuestionnaire(data = {}) {
     const response = await request({
       url: '/api/questionnaire/submit',
       method: 'POST',
-      data: { questionnaireId, answers },
+      data: { ...data },
     });
     return response;
+  },
+  // 获取朋友列表
+  async getFriendsList() {
+    const response = await request({
+      url: '/api/questionnaire/friends',
+      method: 'GET',
+    });
+    return response.data;
   },
 };

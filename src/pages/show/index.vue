@@ -14,10 +14,11 @@
 </template>
 
 <script setup>
-import { ref, watch} from "vue";
+import { ref, onMounted} from "vue";
 import radar from "./components/radar.vue";
 import empty from "@/components/common/empty.vue";
 import { onShow } from "@dcloudio/uni-app";
+import {questionnaireApi} from "@/api/questionnaire";
 
 // 模拟的数据
 const mockQuestionnaires = [
@@ -59,7 +60,11 @@ const showType = ref(-1);
 onShow(() => {
 	showType.value = questionnaires.value.length ? 0 : -1;
 });
-
+onMounted(() => {
+	questionnaireApi.getFriendsList().then((res) => {
+		console.log(res);
+	});
+});
 function chooseQuestionnaire(e) {
 	showType.value = questionnaires.value.find((item) => item.id == e)?.type ?? -1;
 }

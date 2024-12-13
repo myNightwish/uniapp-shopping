@@ -49,13 +49,13 @@ uni.addInterceptor("request", {
         request.header.Authorization = `Bearer ${newAccessToken}`; // 使用新的 accessToken
       } catch (e) {
         console.error('Token refresh failed: ', e);
-        // redirectToLogin(); // 如果刷新失败，跳转到登录页
+        redirectToLogin(); // 如果刷新失败，跳转到登录页
       } finally {
         inRefresh = false; // 刷新完毕，解除标志
       }
     } else {
       // refreshToken也过期了，需要重新登录
-      // redirectToLogin();
+      redirectToLogin();
     }
 
     return request;

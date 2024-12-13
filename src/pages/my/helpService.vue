@@ -1,7 +1,7 @@
 <template>
 	<view class="help-service-container">
 		<uni-title type="h1" align="center" title="功能介绍"></uni-title>
-		<uni-title type="h2" title="1. 使用笑友小程序的主要流程"></uni-title>
+		<uni-title type="h2" title="1. 使用流程介绍："></uni-title>
 		<uni-title type="h3" title="1.1 一键登录"></uni-title>
 		<text>&nbsp;&nbsp;&nbsp;&nbsp;首先在“我的”页面中点击一键登录/注册，未注册的用户会自动注册。之后请及时完善你的相关信息，特别是头像以及昵称，推荐直接使用微信头像以及微信昵称，方便后续好友能在该小程序中快速定位到你的存在。 </text>
 		<uni-title type="h3" title="1.2 填写所选问卷"></uni-title>

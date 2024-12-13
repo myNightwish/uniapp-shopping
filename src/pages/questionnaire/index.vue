@@ -6,6 +6,7 @@
 				<view class="questionnaire-li">
 					<!-- todo： 分享按钮 -->
 					<common-card
+					  first-btn-text="分享啦"
 						second-btn-type="share"
 						:second-btn-data="questionnaire.id"
 						:title="questionnaire.title"
@@ -20,7 +21,7 @@
 		</view>
 		<view v-if="activeTab === tabs[1]" class="no-completed-container">
 			<view class="questionnaire-ul" v-for="questionnaire in noCompleted" :key="questionnaire.id">
-				<view class="questionnaire-li">
+				<view class="questionnaire-li">222
 					<common-card
 						first-btn-text="填写"
 						:title="questionnaire.title"
@@ -45,6 +46,7 @@ import CommonCard from "@/components/common/commonCard.vue";
 import empty from "@/components/common/empty.vue";
 import { useAuthStore } from "@/stores/auth.js";
 import {questionnaireApi} from "@/api/questionnaire";
+import { onShareAppMessage } from "@dcloudio/uni-app";
 const meStore = useAuthStore();
 const activeTab = ref("已填");
 const tabs = ["已填", "未填"];
@@ -56,10 +58,11 @@ onMounted(() => {
 	questionnaireApi.getQuestionnaireList().then((res) => {
 		// 已完成问卷:status === 1
 		res.forEach((item) => {
+			console.log('res--', item)
 			if (item.status === 1) {
-				completed.value.push(item.questionnaire_template);
+				completed.value.push(item.template);
 			} else {
-				noCompleted.value.push(item.questionnaire_template);
+				noCompleted.value.push(item.template);
 			}
 		});
 	});
@@ -67,19 +70,31 @@ onMounted(() => {
 
 function write(questionnaireId) {
 	const userId = meStore.user?.id;
+	console.log('userId---', meStore.user)
 	uni.navigateTo({
-		url: `/pages/questionnaire/write?questionnaireId=${questionnaireId}&ownerId=${userId}&friendId=${userId}`,
+		url: `/pages/questionnaire/write?questionnaireId=${questionnaireId}&ownerId=${userId}&shareId=${userId}`,
 	});
 }
 
 function look(questionnaireId) {
-	console.log(`查看问卷 ID: ${questionnaireId}`);
+	console.log('sj--')
 	const userId = meStore.user?.id;
-	// TODO 目前仅支持查看自己的，所以固定了friendId为自己，后续支持查看为朋友填写的
+	console.log('userId---', meStore.user, `/pages/questionnaire/look?questionnaireId=${questionnaireId}&ownerId=${userId}&shareId=${userId}`)
+	
 	uni.navigateTo({
-		url: `/pages/questionnaire/look?questionnaireId=${questionnaireId}&ownerId=${userId}&friendId=${userId}`,
+		url: `/pages/questionnaire/look?questionnaireId=${questionnaireId}&ownerId=${userId}&shareId=${userId}`,
 	});
 }
+
+onShareAppMessage((res) => {
+		const userId = meStore.user?.id;
+		const questionnaireId = 2;
+		console.log('func---', userId, res)
+		return {
+      title: '分享给朋友吧',
+      path: `/pages/questionnaire/look?questionnaireId=${questionnaireId}&ownerId=${userId}&shareId=${userId}`,
+    };
+});
 </script>
 
 <style lang="scss" scoped>

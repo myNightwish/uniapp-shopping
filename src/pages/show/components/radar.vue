@@ -103,7 +103,7 @@ const opts = {
 
 const sourceData = ref([]);
 const friendList = ref([]);
-const curSelect = ref([]); // friendId Array
+const curSelect = ref([]); // shareId Array
 
 // 区分朋友和自己，顺便规范化一下可视化结果
 watch(sourceData, (newVal) => {

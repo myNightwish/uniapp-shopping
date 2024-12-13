@@ -1,5 +1,6 @@
 <template>
-		<view v-if="isOpen" class="login-overlay" @click="cancelLogin">
+	<!--  @click="cancelLogin" -->
+		<view v-if="isOpen" class="login-overlay">
       <view class="login-container">
 				<view class="login-button-container">
 					<button @click.stop="login" class="login-button">一键登录/注册</button>

@@ -12,7 +12,7 @@
 			<view class="question-item">
 				<view class="description">{{ `${qIndex + 1}. ${question.text}` }}</view>
 				<view class="options">
-					<radio-group>
+					<radio-group v-if="Array.isArray(question.options)">
 						<label class="radio" v-for="(option, oIndex) in question.options" :key="option">
 							<view>
 								<radio
@@ -25,6 +25,13 @@
 							<view>{{ option }}</view>
 						</label>
 					</radio-group>
+					<!-- 否则显示文本输入框 -->
+					<text 
+						v-else 
+						type="text"
+						:value="question.answer"
+						class="text-input"
+					/>
 				</view>
 			</view>
 		</view>
@@ -39,7 +46,7 @@ import { questionnaireApi } from "@/api/questionnaire";
 const params = reactive({
 	questionnaireId: "",
 	ownerId: "",
-	friendId: "",
+	shareId: "",
 });
 
 // 问题列表和问卷信息
@@ -66,7 +73,7 @@ onLoad(async (option) => {
 
 	params.questionnaireId = option?.questionnaireId;
 	params.ownerId = option?.ownerId;
-	params.friendId = option?.friendId;
+	params.shareId = option?.shareId;
 	getQueryQuestions(params);
 });
 
@@ -139,5 +146,21 @@ async function getQueryQuestions(params= {}) {
 		text-align: center;
 		border-radius: 30px;
 	}
+}
+.text-input {
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 8px 10px;
+	height: 56px;
+	line-height: 56px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box; /* 确保 padding 不影响宽度 */
+  transition: border-color 0.3s ease;
+}
+
+.text-input:focus {
+  border-color: $theme-color-lighter-5; /* 聚焦时边框颜色 */
+  outline: none;        /* 去除默认高亮 */
 }
 </style>

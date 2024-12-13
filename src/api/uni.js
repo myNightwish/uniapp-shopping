@@ -43,7 +43,6 @@ export function getUserProfile() {
     uni.getUserProfile({
       desc: '用于完善用户资料', // 用户授权信息的说明
       success: profileRes => {
-        console.log('profileRes00', profileRes)
         const userInfo = profileRes.userInfo;  // 用户详细信息（昵称、头像等）
         // 将 code 和用户信息发送到后端
         resolve(userInfo);

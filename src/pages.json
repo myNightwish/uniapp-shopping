@@ -84,13 +84,14 @@
 		{
 			"path": "pages/me/index",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 		},
 		{
 			"path": "pages/my/supportService",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationBarTitleText": "支持中心"
 			}
 		},
 		{

@@ -190,7 +190,7 @@ onLoad(async (option) => {
 	// 如果是已经登录了的，且是点击好友分享链接进入的，就直接跳转到问卷填写页
 	if (isNavigateTo) {
 		uni.navigateTo({
-			url: `/pages/questionnaire/write?questionnaireId=${params.questionnaireId}&ownerId=${params.ownerId}&friendId=${userId}`,
+			url: `/pages/questionnaire/write?questionnaireId=${params.questionnaireId}&ownerId=${params.ownerId}&shareId=${userId}`,
 		});
 	}
 });
@@ -208,7 +208,7 @@ async function login() {
 	const isNavigateTo = params.curScene == 1 && userId !== params.ownerId;
 	if (isNavigateTo) {
 		uni.navigateTo({
-			url: `/pages/questionnaire/write?questionnaireId=${params.questionnaireId}&ownerId=${params.ownerId}&friendId=${userId}`,
+			url: `/pages/questionnaire/write?questionnaireId=${params.questionnaireId}&ownerId=${params.ownerId}&shareId=${userId}`,
 		});
 	}
 }
@@ -239,22 +239,22 @@ function confirmInfo() {
 	infoPopup.value.close();
 }
 
-onShareAppMessage((res) => {
-	if (res.from === "button") {
-		// 来自页面内分享按钮
-		console.log("share target: ", res.target);
-	}
-	return {
-		title: "我正在使用笑友小程序，快来一起使用吧~",
-		path: `/pages/me/index`,
-		imageUrl: logoUrl,
-	};
-});
+// onShareAppMessage((res) => {
+// 	if (res.from === "button") {
+// 		// 来自页面内分享按钮
+// 		console.log("share target: ", res.target);
+// 	}
+// 	return {
+// 		title: "我正在使用笑友小程序，快来一起使用吧~",
+// 		path: `/pages/me/index`,
+// 		imageUrl: logoUrl,
+// 	};
+// });
 
 // 相关服务
 function helpService() {
 	uni.navigateTo({
-		url: "/pages/me/helpService",
+		url: "/pages/my/helpService",
 	});
 }
 
