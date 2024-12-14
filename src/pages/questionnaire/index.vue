@@ -1,6 +1,12 @@
 <template>
 	<view class="questionnaire-container">
 		<nav-tabs :tabs="tabs" v-model="activeTab"></nav-tabs>
+			<button class="share-btn" open-type="share">
+				添加好友
+				<view class="service-icon">
+					<uni-icons type="paperplane" size="35" color="#030a27"></uni-icons>
+				</view>
+			</button>
 		<view v-if="activeTab === tabs[0]" class="completed-container">
 			<view class="questionnaire-ul" v-for="questionnaire in completed" :key="questionnaire.id">
 				<view class="questionnaire-li">
@@ -88,11 +94,10 @@ function look(questionnaireId) {
 
 onShareAppMessage((res) => {
 		const userId = meStore.user?.id;
-		const questionnaireId = 2;
 		console.log('func---', userId, res)
 		return {
       title: '分享给朋友吧',
-      path: `/pages/questionnaire/look?questionnaireId=${questionnaireId}&ownerId=${userId}&shareId=${userId}`,
+      path: `/pages/me/index?shareId=${userId}`,
     };
 });
 </script>

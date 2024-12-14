@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted} from "vue";
+import { ref, onMounted, watch} from "vue";
 import radar from "./components/radar.vue";
 import empty from "@/components/common/empty.vue";
 import { onShow } from "@dcloudio/uni-app";
@@ -26,15 +26,8 @@ const mockQuestionnaires = [
 	{ id: "2", title: "问卷二", type: 1 },
 	{ id: "3", title: "问卷三", type: 0 }
 ];
-// todo： mock 数据初始化替换
-const questionnaires = ref(mockQuestionnaires);
-const range = ref(
-	mockQuestionnaires.map((item) => ({
-		value: item.id,
-		text: item.title
-	}))
-);
-
+const questionnaires = ref([]);
+const range = ref([]);
 const curValue = ref("");
 const showType = ref(-1);
 
@@ -48,24 +41,25 @@ const showType = ref(-1);
 //     }));
 // });
 
-// watch(error, (newVal) => {
-//     uni.showToast({
-//         title: `获取已填写问卷失败`,
-//         icon: "error",
-//         duration: 2000,
-//     });
-//     // throw new Error(`获取已填写问卷失败: ${newVal}`);
-// });
-
-onShow(() => {
+watch(questionnaires, (newVal) => {
 	showType.value = questionnaires.value.length ? 0 : -1;
 });
+
 onMounted(() => {
-	questionnaireApi.getFriendsList().then((res) => {
-		console.log(res);
+	// questionnaireApi.getFriendsList().then((res) => {
+	// 	console.log('res---', res);
+	// });
+	questionnaireApi.getQuestionnaireList().then((res) => {
+		questionnaires.value = res;
+			range.value = res.map((item) => ({
+				value: item.template.id,
+				text: item.template.title
+			})
+		);
 	});
 });
 function chooseQuestionnaire(e) {
+	console.log('e---', e, questionnaires.value)
 	showType.value = questionnaires.value.find((item) => item.id == e)?.type ?? -1;
 }
 </script>

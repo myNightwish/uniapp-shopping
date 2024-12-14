@@ -1,7 +1,7 @@
 <template>
 	<view class="radar-container">
 		<view class="charts-box">
-			<qiun-data-charts type="radar" :opts="opts" :chartData="chartData" />
+			<qiun-data-charts type="radar" :opts="radarOptions" :chartData="radarData" />
 		</view>
 		<view class="friend-select">
 			<view class="head">
@@ -48,19 +48,38 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, watch, onBeforeMount } from "vue";
 import qiunDataCharts from "@/components/thirdUse/qiun-data-charts/qiun-data-charts.vue";
-import { watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
-import { onBeforeMount } from "vue";
 import empty from "@/components/common/empty.vue";
 import { userDefaultData } from "@/const";
 import { omitLongString } from "@/utils/tools";
+import {questionnaireApi} from "@/api/questionnaire";
 
-const props = defineProps();
-
+const props = defineProps({
+	questionnaireId: {
+		type: String,
+		default: ''
+	}
+});
+const radarData = ref({});
 const meStore = useAuthStore();
 
+watch(() => props.questionnaireId, 
+	async (newQuestionnaireId, oldQuestionnaireId) => {
+    // 如果 questionnaireId 发生变化，执行网络请求
+		if (newQuestionnaireId === oldQuestionnaireId
+			|| !newQuestionnaireId) {
+			return;
+		}
+		questionnaireApi.analyzeQuestionnaire({
+			questionnaireId: newQuestionnaireId
+		}).then(res => {
+			radarData.value = res.analysis.radarChart;
+		}).catch(() => {
+			console.log('err');
+		})
+})
 const chartData = reactive({
 	categories: ["神经质", "外向型", "开放性", "宜人性", "尽责性"],
 	series: [
@@ -78,11 +97,20 @@ const chartData = reactive({
 		},
 	],
 });
-const opts = {
-	color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
-	padding: [5, 5, 5, 5],
-	dataLabel: false,
-	enableScroll: false,
+
+const radarOptions = {
+	title: {
+		text: '亲密关系雷达图',
+		subtext: '伴侣关系对比',
+		left: 'center'
+	},
+	tooltip: {
+		trigger: 'axis'
+	},
+	legend: {
+		orient: 'vertical',
+		left: 'left'
+	},
 	legend: {
 		show: true,
 		position: "right",
@@ -92,9 +120,9 @@ const opts = {
 		radar: {
 			gridType: "radar",
 			gridColor: "#CCCCCC",
-			gridCount: 3,
+			gridCount: 1,
 			opacity: 0.2,
-			max: 130,
+			max: 5,
 			labelShow: true,
 			border: true,
 		},
@@ -106,20 +134,20 @@ const friendList = ref([]);
 const curSelect = ref([]); // shareId Array
 
 // 区分朋友和自己，顺便规范化一下可视化结果
-watch(sourceData, (newVal) => {
-	newVal.forEach((item) => {
-		if (item.friend.id !== meStore.user?.id) {
-			friendList.value.push({
-				...item.friend,
-				visualization: Object.values(JSON.parse(item.visualization)),
-				disabled: false,
-			});
-		} else {
-			chartData.series[0].data = Object.values(JSON.parse(item.visualization));
-			console.log("chartData: ", chartData);
-		}
-	});
-});
+// watch(sourceData, (newVal) => {
+// 	newVal.forEach((item) => {
+// 		if (item.friend.id !== meStore.user?.id) {
+// 			friendList.value.push({
+// 				...item.friend,
+// 				visualization: Object.values(JSON.parse(item.visualization)),
+// 				disabled: false,
+// 			});
+// 		} else {
+// 			chartData.series[0].data = Object.values(JSON.parse(item.visualization));
+// 			console.log("chartData: ", chartData);
+// 		}
+// 	});
+// });
 
 onBeforeMount(() => {
 	// 使用 mock 数据代替数据获取请求
@@ -164,7 +192,6 @@ function submit() {
 }
 
 function checkboxChange(e) {
-	console.log("checkboxChange: ", e.detail.value);
 	const select = e.detail.value;
 	curSelect.value = select;
 	// 实现最多复选两位好友

@@ -88,7 +88,7 @@ function radioChange(e) {
 	const [qIndex, oIndex] = e.detail.value.split("#");
 	const answer = questions.value[qIndex - 1].options[oIndex - 1];
 	answers.value[qIndex -1] = {
-		questionId: qIndex - 1,
+		questionId: questions.value[qIndex - 1].id,
 		answer,
 	};
 }

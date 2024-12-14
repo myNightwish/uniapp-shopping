@@ -51,4 +51,20 @@ export const questionnaireApi = {
     });
     return response.data;
   },
+  async analyzeQuestionnaire(data = {}) {
+    const response = await request({
+      url: '/api/questionnaire/analyze',
+      method: 'POST',
+      data: { ...data },
+    });
+    return response.data;
+  },
+  async addFriends(data = {}) {
+    const response = await request({
+      url: '/api/questionnaire/addfriends',
+      method: 'POST',
+      data: { ...data },
+    });
+    return response.data;
+  },
 };
