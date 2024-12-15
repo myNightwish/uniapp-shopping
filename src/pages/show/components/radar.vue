@@ -8,15 +8,7 @@
 				<view class="text">请选择好友(最多两位)</view>
 				<view class="action">
 					<button
-						style="
-							width: 80px;
-							height: 40px;
-							line-height: 34px;
-							margin-left: 10px;
-							background-color: #ffffff;
-							border: 3px solid #0256ff;
-							color: #0256ff;
-						"
+						class="see-btn"
 						@click="submit"
 					>
 						查看
@@ -24,8 +16,9 @@
 				</view>
 			</view>
 			<view class="friend-list-container">
+				{{ friendList }}
 				<checkbox-group @change="checkboxChange">
-					<label class="friend-list" v-for="friend in friendList" :key="friend.id">
+					<label class="friend-list" v-for="friend in friendList" :key="friend.radarData">
 						<view class="info">
 							<image
 								style="height: 80%; border-radius: 50%"
@@ -149,59 +142,39 @@ const sourceData = ref([]);
 const friendList = ref([]);
 const curSelect = ref([]); // shareId Array
 
-// 区分朋友和自己，顺便规范化一下可视化结果
-// watch(sourceData, (newVal) => {
-// 	newVal.forEach((item) => {
-// 		if (item.friend.id !== meStore.user?.id) {
-// 			friendList.value.push({
-// 				...item.friend,
-// 				visualization: Object.values(JSON.parse(item.visualization)),
-// 				disabled: false,
-// 			});
-// 		} else {
-// 			chartData.series[0].data = Object.values(JSON.parse(item.visualization));
-// 			console.log("chartData: ", chartData);
-// 		}
-// 	});
-// });
-
+// 规范化一下可视化结果
+watch(sourceData, (newVal) => {
+	console.log('val--', val)
+	newVal.forEach((item) => {
+		friendList.value.push({
+				...item.friendId,
+				radarData: generateRadarChartData(item.questionnaireScores || []),
+				disabled: false,
+			});
+	});
+});
+function generateRadarChartData(dimensionScores) {
+    return {
+      categories: dimensionScores.map(d => d.name),
+      series: [{
+        name: '关系雷达',
+        data: dimensionScores.map(d => d.score),
+      }],
+    };
+}
 onBeforeMount(() => {
-	// 使用 mock 数据代替数据获取请求
-	mockGetFriendListAsOwner();
+	questionnaireApi.getFriendsList().then((res) => {
+		sourceData.value = res;
+	});
 });
 
-// Mock 数据替代 API 请求
-function mockGetFriendListAsOwner() {
-	// todo：请求数据
-	const mockData = [
-		{
-			friend: {
-				id: "1",
-				avatarUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoNunyip9cyunWDmNIZyvdDz38ocdgHgC_pXNe31lArql_ORp4MXv7RcA&s",
-				nickName: "EE",
-			},
-			visualization: '{"neuroticism": 60, "extraversion": 80, "openness": 75, "agreeableness": 70, "conscientiousness": 85}',
-		},
-		{
-			friend: {
-				id: "3",
-				avatarUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGWkIiW7S7wP_VamhtXl5qAshTxAuNtD4N8G3zYBMWMa2QHdClHugs9w&s",
-				nickName: "萌萌",
-			},
-			visualization: '{"neuroticism": 50, "extraversion": 65, "openness": 60, "agreeableness": 55, "conscientiousness": 70}',
-		},
-	];
-	sourceData.value = mockData;
-	console.log("sourceData.value: ", sourceData.value);
-}
-
 function submit() {
-	const friend1 = friendList.value.find((item) => item.id === curSelect.value[0]);
-	chartData.series[1].data = friend1?.visualization || [0, 0, 0, 0, 0];
+	const friend1 = friendList.value.find((item) => item.friendId === curSelect.value[0]);
+	chartData.series[1].data = friend1?.radarData || [0, 0, 0, 0, 0];
 	const nickName1 = omitLongString(friend1?.nickName || "", 8);
 	chartData.series[1].name = nickName1 || "未选择";
-	const friend2 = friendList.value.find((item) => item.id === curSelect.value[1]);
-	chartData.series[2].data = friend2?.visualization || [0, 0, 0, 0, 0];
+	const friend2 = friendList.value.find((item) => item.friendId === curSelect.value[1]);
+	chartData.series[2].data = friend2?.radarData || [0, 0, 0, 0, 0];
 	const nickName2 = omitLongString(friend2?.nickName || "", 8);
 	chartData.series[2].name = nickName2 || "未选择";
 	console.log("chartData.series: ", chartData.series);
@@ -281,5 +254,14 @@ function handleComplete() {
 	.no-data {
 		padding-top: 60px;
 	}
+}
+.see-btn {
+	width: 80px;
+	height: 40px;
+	line-height: 34px;
+	margin-left: 10px;
+	background-color: #ffffff;
+	border: 3px solid #0256ff;
+	color: #0256ff;
 }
 </style>

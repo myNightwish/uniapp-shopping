@@ -1,7 +1,6 @@
 <template>
 	<view class="show-container">
 		<view class="questionnaire-select">
-			{{ curValue }}
 			<uni-data-select v-model="curValue" :localdata="range" @change="chooseQuestionnaire"></uni-data-select>
 		</view>
 		<view class="top-placeholder"></view>
@@ -18,7 +17,6 @@
 import { ref, onMounted, watch} from "vue";
 import radar from "./components/radar.vue";
 import empty from "@/components/common/empty.vue";
-import { onShow } from "@dcloudio/uni-app";
 import {questionnaireApi} from "@/api/questionnaire";
 
 const questionnaires = ref([]);
@@ -35,10 +33,6 @@ watch(questionnaires, (newVal) => {
 });
 
 onMounted(() => {
-	questionnaireApi.getFriendsList().then((res) => {
-		console.log('res---', res);
-	});
-
 	questionnaireApi.getQuestionnaireList().then((res) => {
 		questionnaires.value = res;
 	});

@@ -19,7 +19,7 @@
 				</view>
 				<view class="info">
 					<view class="nick-name">昵称：{{ meStore.user?.nickName || userDefaultData.nickName }}</view>
-					<view class="id">id编号：{{ meStore.user?.openid || userDefaultData.id }}</view>
+					<view class="id">ID：{{ meStore.user?.openid || userDefaultData.id }}</view>
 				</view>
 			</view>
 			<view class="user-right">
