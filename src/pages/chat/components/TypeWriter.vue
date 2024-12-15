@@ -11,6 +11,7 @@ import MarkdownIt from 'markdown-it';
 const props = defineProps({
   text: {
     type: String,
+    default: '',
     required: true
   },
   speed: {

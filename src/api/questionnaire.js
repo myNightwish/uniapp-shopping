@@ -67,4 +67,17 @@ export const questionnaireApi = {
     });
     return response;
   },
+  async getQuestionnaireAnalysis(params = {}) {
+    // 构建查询字符串
+    const queryString = Object.keys(params)
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+    .join('&');
+      
+    const paramsStr = `${queryString ? `?${queryString}` : ''}`;
+    const response = await request({
+      url: '/api/questionnaire/gptanalysis' + paramsStr,
+      method: 'GET',
+    });
+    return response.data;
+  },
 };

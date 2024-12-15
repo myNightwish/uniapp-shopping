@@ -44,6 +44,13 @@
 				<empty info="暂无好友为你填写该问卷"></empty>
 			</view>
 		</view>
+		<view class="analysis-box">
+			<TypeWriter 
+				:text="analysisResult.content" 
+				class="type-writer-wrapper"
+				@complete="handleComplete"
+			/>
+		</view>
 	</view>
 </template>
 
@@ -55,6 +62,7 @@ import empty from "@/components/common/empty.vue";
 import { userDefaultData } from "@/const";
 import { omitLongString } from "@/utils/tools";
 import {questionnaireApi} from "@/api/questionnaire";
+import TypeWriter from '../../chat/components/TypeWriter.vue';
 
 const props = defineProps({
 	questionnaireId: {
@@ -64,19 +72,26 @@ const props = defineProps({
 });
 const radarData = ref({});
 const meStore = useAuthStore();
-
+const analyzeId = ref(0);
+const analysisResult = ref("");
 watch(() => props.questionnaireId, 
 	async (newQuestionnaireId, oldQuestionnaireId) => {
-		console.log('newQuestionnaireId', newQuestionnaireId, oldQuestionnaireId)
     // 如果 questionnaireId 发生变化，执行网络请求
-		// if (newQuestionnaireId === oldQuestionnaireId
-		// 	|| !newQuestionnaireId) {
-		// 	return;
-		// }
+		if (newQuestionnaireId === oldQuestionnaireId
+			|| !newQuestionnaireId) {
+			return;
+		}
 		questionnaireApi.analyzeQuestionnaire({
 			questionnaireId: newQuestionnaireId
 		}).then(res => {
 			radarData.value = res.analysis.radarChart;
+			analyzeId.value = +res.analysis.gptAnalysisId;
+			questionnaireApi.getQuestionnaireAnalysis({
+				analyzeId: +res.gptAnalysisId + 1,
+				questionnaireId: newQuestionnaireId
+			}).then(res => {
+				analysisResult.value = res;
+			})
 		}).catch(() => {
 			console.log('err');
 		})
@@ -207,6 +222,9 @@ function checkboxChange(e) {
 			friendList.value[i].disabled = false;
 		}
 	}
+}
+function handleComplete() {
+	console.log('9999--')
 }
 </script>
 
