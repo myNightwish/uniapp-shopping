@@ -5,10 +5,10 @@
 		</view>
 		<view class="top-placeholder"></view>
 		<view class="chart-container">
-			<view v-if="showType === -1" class="no-data">
+			<radar v-if="showType" :questionnaire-id="curValue"></radar>
+			<view v-else class="no-data">
 				<empty info="请先选择问卷"></empty>
 			</view>
-			<radar v-if="showType === 0" :questionnaire-id="curValue"></radar>
 		</view>
 	</view>
 </template>
@@ -42,7 +42,7 @@ const showType = ref(-1);
 // });
 
 watch(questionnaires, (newVal) => {
-	showType.value = questionnaires.value.length ? 0 : -1;
+	showType.value = questionnaires.value.length ? 1 : -1;
 });
 
 onMounted(() => {
@@ -59,8 +59,8 @@ onMounted(() => {
 	});
 });
 function chooseQuestionnaire(e) {
-	console.log('e---', e, questionnaires.value)
-	showType.value = questionnaires.value.find((item) => item.id == e)?.type ?? -1;
+	const res = questionnaires.value.find((item) => +item.id === +e)?.status ?? -1;
+	showType.value = res;
 }
 </script>
 

@@ -31,13 +31,11 @@ export const userApi = {
   },
 
   async loginAndAutoSignUp({ code, userInfo }) {
-    console.log('d0000', code, userInfo)
     const response = await request({
       url: '/api/loginAndAutoSignUp',
       method: 'POST',
       data: { code, userInfo },
     });
-    console.log('response---', response);
     return response;
   }
 };

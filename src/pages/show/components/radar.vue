@@ -67,11 +67,12 @@ const meStore = useAuthStore();
 
 watch(() => props.questionnaireId, 
 	async (newQuestionnaireId, oldQuestionnaireId) => {
+		console.log('newQuestionnaireId', newQuestionnaireId, oldQuestionnaireId)
     // 如果 questionnaireId 发生变化，执行网络请求
-		if (newQuestionnaireId === oldQuestionnaireId
-			|| !newQuestionnaireId) {
-			return;
-		}
+		// if (newQuestionnaireId === oldQuestionnaireId
+		// 	|| !newQuestionnaireId) {
+		// 	return;
+		// }
 		questionnaireApi.analyzeQuestionnaire({
 			questionnaireId: newQuestionnaireId
 		}).then(res => {

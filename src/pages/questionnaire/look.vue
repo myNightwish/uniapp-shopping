@@ -19,7 +19,8 @@
 									color="#0256FF"
 									:disabled="true"
 									:value="`${qIndex + 1}#${oIndex + 1}`"
-									:checked="oIndex === answers[qIndex] || question.answer === option"
+									:checked="oIndex === answers[qIndex] || question.answer === option
+									|| +question.answer === option"
 								/>
 							</view>
 							<view>{{ option }}</view>
@@ -28,10 +29,8 @@
 					<!-- 否则显示文本输入框 -->
 					<text 
 						v-else 
-						type="text"
-						:value="question.answer"
 						class="text-input"
-					/>
+					>{{ question.answer }}</text>
 				</view>
 			</view>
 		</view>

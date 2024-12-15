@@ -4,7 +4,7 @@ export const questionnaireApi = {
   // 初始化
   async initQuestionnaire() {
     const response = await request({
-      url: '/api/questionnaire/initialize',
+      url: '/api/questionnaire/init',
       method: 'GET',
     });
     return response;
@@ -65,6 +65,6 @@ export const questionnaireApi = {
       method: 'POST',
       data: { ...data },
     });
-    return response.data;
+    return response;
   },
 };

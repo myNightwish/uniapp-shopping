@@ -56,7 +56,7 @@
 								<uni-icons type="paperplane" size="35" color="#030a27"></uni-icons>
 							</view>
 						</button>
-						<view class="service-title">分享小程序</view>
+						<view class="service-title">添加好友</view>
 					</view>
 					<view class="service-li">
 						<view class="service-icon" @click="customerChatService">
@@ -115,6 +115,7 @@ import { onShow, onLoad, onShareAppMessage } from "@dcloudio/uni-app";
 import { logoUrl, feedbackUrl, sourceCodeUrl, userDefaultData } from "@/const";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
 import loginBtn from "./component/loginBtn.vue";
+import {questionnaireApi} from "@/api/questionnaire";
 
 const meStore = useAuthStore();
 const isLogin = ref(false);
@@ -128,6 +129,12 @@ watch(
   { immediate: true }  // 设置 immediate 为 true，初始化时也会执行一次
 );
 
+onLoad(async (option) => {
+	if (option?.shareId) {
+		uni.setStorageSync('shareId', +option.shareId);
+	}
+});
+
 async function login() {
 	const userInfo = await getUserProfile();
 	meStore.$patch({ user: userInfo });
@@ -139,10 +146,31 @@ async function login() {
 	isLogin.value = meStore.user?.id && getToken("refreshToken") !== "";
 	// todo； 成功后关闭
 	isOpen.value = false;
+	// 获取存储的邀请信息
+	const shareId = uni.getStorageSync('shareId');
+	const userId = meStore?.user.id;
+
+	if (shareId && userId) {
+		bindFriend(shareId);
+	}
 }
 const cancelLogin = () => {
 	isOpen.value = false;
 };
+
+function bindFriend(shareId){
+	questionnaireApi.addFriends({
+		shareId 
+	}).then(res => {
+		uni.showToast({
+      title: res.message,
+      icon: "none",
+      duration: 2000,
+    });
+	}).finally(_ => {
+		uni.removeStorageSync('shareId');
+	})
+}
 
 function toUpdateUser() {
 	uni.navigateTo({
@@ -204,12 +232,13 @@ function moreService() {
 	});
 }
 
-// onShareAppMessage(() => {
-// 	return {
-// 		title: "笑友小程序",
-// 		path: "/pages/index/index",
-// 	};
-// });
+onShareAppMessage(() => {
+	const userId = meStore.user?.id;
+	return {
+		title: "快来加我好友吧",
+		path: `/pages/me/index?shareId=${userId}`,
+	};
+});
 </script>
 
 <style lang="scss" scoped>

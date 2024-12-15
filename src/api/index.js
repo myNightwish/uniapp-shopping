@@ -24,7 +24,6 @@ const request = (options) => {
           // 处理未授权逻辑
           const authStore = useAuthStore();
           authStore.logout();
-          // toast.warn('登录已过期，请重新登录');
           if (getCurrentPages().slice(-1)[0]?.route !== 'pages/login/index') {
             uni.navigateTo({ url: '/pages/login/index' });
           }
@@ -32,14 +31,12 @@ const request = (options) => {
         } else if (res.statusCode === 400) {
           // 处理 400 错误
           const msg = res.data?.message || '请求错误，请稍后再试';
-          // toast.warn(msg);
           reject(res);
         } else {
           reject(res);
         }
       },
       fail: (err) => {
-        // toast.warn('网络错误，请稍后再试');
         reject(err);
       },
     });
