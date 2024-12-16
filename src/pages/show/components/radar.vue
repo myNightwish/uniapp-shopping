@@ -16,9 +16,8 @@
 				</view>
 			</view>
 			<view class="friend-list-container">
-				{{ friendList }}
 				<checkbox-group @change="checkboxChange">
-					<label class="friend-list" v-for="friend in friendList" :key="friend.radarData">
+					<label class="friend-list" v-for="friend in friendList" :key="friend.friendId">
 						<view class="info">
 							<image
 								style="height: 80%; border-radius: 50%"
@@ -28,7 +27,7 @@
 							<view class="nick-name">{{ friend.nickName }}</view>
 						</view>
 						<view>
-							<checkbox :value="friend.id" :disabled="friend.disabled" />
+							<checkbox :value="friend.friendId" :disabled="friend.disabled" />
 						</view>
 					</label>
 				</checkbox-group>
@@ -89,23 +88,6 @@ watch(() => props.questionnaireId,
 			console.log('err');
 		})
 })
-const chartData = reactive({
-	categories: ["神经质", "外向型", "开放性", "宜人性", "尽责性"],
-	series: [
-		{
-			name: "自己",
-			data: [0, 0, 0, 0, 0],
-		},
-		{
-			name: "未选择",
-			data: [0, 0, 0, 0, 0],
-		},
-		{
-			name: "未选择",
-			data: [0, 0, 0, 0, 0],
-		},
-	],
-});
 
 const radarOptions = {
 	title: {
@@ -115,10 +97,6 @@ const radarOptions = {
 	},
 	tooltip: {
 		trigger: 'axis'
-	},
-	legend: {
-		orient: 'vertical',
-		left: 'left'
 	},
 	legend: {
 		show: true,
@@ -144,24 +122,16 @@ const curSelect = ref([]); // shareId Array
 
 // 规范化一下可视化结果
 watch(sourceData, (newVal) => {
-	console.log('val--', val)
 	newVal.forEach((item) => {
+		const radarArr = item.questionnaireScores?.[0]?.scores.map(d => d.score);
 		friendList.value.push({
-				...item.friendId,
-				radarData: generateRadarChartData(item.questionnaireScores || []),
+				...item,
+				radarArr,
 				disabled: false,
 			});
 	});
 });
-function generateRadarChartData(dimensionScores) {
-    return {
-      categories: dimensionScores.map(d => d.name),
-      series: [{
-        name: '关系雷达',
-        data: dimensionScores.map(d => d.score),
-      }],
-    };
-}
+
 onBeforeMount(() => {
 	questionnaireApi.getFriendsList().then((res) => {
 		sourceData.value = res;
@@ -169,15 +139,21 @@ onBeforeMount(() => {
 });
 
 function submit() {
-	const friend1 = friendList.value.find((item) => item.friendId === curSelect.value[0]);
-	chartData.series[1].data = friend1?.radarData || [0, 0, 0, 0, 0];
+	const friend1 = friendList.value.find((item) => item.friendId === +curSelect.value[0]);
 	const nickName1 = omitLongString(friend1?.nickName || "", 8);
-	chartData.series[1].name = nickName1 || "未选择";
+	const frinedObj1 = {
+		name: nickName1 || "未选择",
+		data: friend1?.radarArr || [0, 0, 0, 0],
+	};
+	radarData.value.series.push(frinedObj1);
+
 	const friend2 = friendList.value.find((item) => item.friendId === curSelect.value[1]);
-	chartData.series[2].data = friend2?.radarData || [0, 0, 0, 0, 0];
 	const nickName2 = omitLongString(friend2?.nickName || "", 8);
-	chartData.series[2].name = nickName2 || "未选择";
-	console.log("chartData.series: ", chartData.series);
+	const frinedObj2 = {
+		name: nickName2 || "未选择",
+		data: friend2?.radarArr || [0, 0, 0, 0],
+	};
+	radarData.value.series.push(frinedObj2);
 }
 
 function checkboxChange(e) {
@@ -186,7 +162,7 @@ function checkboxChange(e) {
 	// 实现最多复选两位好友
 	if (select.length >= 2) {
 		for (let i = 0; i < friendList.value.length; i++) {
-			if (!select.includes(friendList.value[i].id)) {
+			if (!select.includes(friendList.value[i].friendId)) {
 				friendList.value[i].disabled = true;
 			}
 		}

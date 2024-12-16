@@ -40,6 +40,25 @@
 			}
 		},
 		{
+			"path": "pages/me/help",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/me/about",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/me/modify",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "修改资料"
+			}
+		},
+		{
 			"path": "pages/index/chatGPT",
 			"style": {
 				"navigationBarTitleText": "心理咨询"
@@ -58,25 +77,13 @@
 			}
 		},
 		{
-			"path": "pages/my/aboutService",
-			"style": {
-				"navigationBarTitleText": "关于笑友"
-			}
-		},
-		{
-			"path": "pages/my/rankList",
+			"path": "pages/me/rankList",
 			"style": {
 				"navigationBarTitleText": "排行榜"
 			}
 		},
 		{
-			"path": "pages/my/helpService",
-			"style": {
-				"navigationBarTitleText": "帮助中心"
-			}
-		},
-		{
-			"path": "pages/my/customerChatService",
+			"path": "pages/me/customerChatService",
 			"style": {
 				"navigationBarTitleText": "智能客服"
 			}
@@ -89,15 +96,9 @@
 			}
 		},
 		{
-			"path": "pages/my/supportService",
+			"path": "pages/me/support",
 			"style": {
 				"navigationBarTitleText": "支持中心"
-			}
-		},
-		{
-			"path": "pages/my/updateUser",
-			"style": {
-				"navigationBarTitleText": "修改资料"
 			}
 		},
 		{

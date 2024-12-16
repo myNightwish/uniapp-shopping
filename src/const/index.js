@@ -65,13 +65,13 @@ export const homeIconsList = [
 	{
 		icon: '/static/image/homeIcons/aboutMe.png',
 		name: '关于自己',
-		path: '/pages/my/rankList?option=me',
+		path: '/pages/me/rankList?option=me',
 		isTab: false
 	},
 	{
 		icon: '/static/image/homeIcons/aboutOther.png',
 		name: '关于他人',
-		path: '/pages/my/rankList?option=other',
+		path: '/pages/me/rankList?option=other',
 		isTab: false
 	},
 	{
@@ -87,7 +87,6 @@ export const secondRank = '/static/image/list/second.png'
 export const thirdRank = '/static/image/list/third.png'
 
 export const feedbackUrl = 'https://xh4u7d54le.feishu.cn/share/base/form/shrcntq0JjHrPv50gsBhU5yVRrc'
-export const sourceCodeUrl = 'https://github.com/Justin3go/xiaoyou-mp'
 
 export const wxMoney = '/static/wechatCode.jpg'
 

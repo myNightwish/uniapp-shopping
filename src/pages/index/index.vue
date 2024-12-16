@@ -23,18 +23,7 @@
 				</view>
 			</view>
 			<view class="user-right">
-				<view class="questionnaire-container">
-					<view class="questionnaire-count">
-						{{ dataFriend?.me.countAsFriend ?? "--" }}
-					</view>
-					<view class="questionnaire-title">已填</view>
-				</view>
-				<view class="owner-container">
-					<view class="owner-count">
-						{{ dataOwner?.me.countAsOwner ?? "--" }}
-					</view>
-					<view class="owner-title">被填</view>
-				</view>
+				<!-- todo: 添加好友 -->
 			</view>
 		</view>
 		<!-- 首页金刚位 -->
@@ -86,26 +75,14 @@ import UniIcons from '@/common/uni-icons/uni-icons.vue';
 import { useAuthStore } from "@/stores/auth.js";
 
 const meStore = useAuthStore();
-
-// Mock 数据
-const dataFriend = {
-	me: {
-		countAsFriend: 10,
-	},
-};
-const dataOwner = ref({
-	me: {
-		countAsOwner: 5,
-	}
-});
 const mockNewsData = [
 	{
 		id: "1",
-		content: "Mock 消息 1",
+		content: "消息 1",
 	},
 	{
 		id: "2",
-		content: "Mock 消息 2",
+		content: "消息 2",
 	},
 ];
 
@@ -114,13 +91,8 @@ const newsPopup = ref();
 const curNewsId = ref("");
 const curNewsContent = ref("");
 
-// onShow 替换为模拟数据获取
 onShow(() => {
-	if (!meStore.user) {
-		console.log("Mock: 获取用户数据");
-	}
-	console.log("Mock: 获取问卷数据");
-	// todo： 拉取消息接口
+	// todo： 消息订阅：拉取消息接口
 	news.value = mockNewsData;
 });
 
@@ -131,7 +103,6 @@ onUnload(() => {
 
 // 下拉刷新替换
 onPullDownRefresh(() => {
-	console.log("Mock: 刷新数据");
 	uni.stopPullDownRefresh();
 });
 

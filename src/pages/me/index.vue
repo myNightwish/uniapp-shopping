@@ -73,12 +73,6 @@
 						<view class="service-title">支持我们</view>
 					</view>
 					<view class="service-li">
-						<view class="service-icon" @click="codeService">
-							<uni-icons type="flag" size="35" color="#030a27"></uni-icons>
-						</view>
-						<view class="service-title">代码开源</view>
-					</view>
-					<view class="service-li">
 						<view class="service-icon" @click="aboutService">
 							<uni-icons type="info" size="35" color="#030a27"></uni-icons>
 						</view>
@@ -112,7 +106,7 @@ import { useAuthStore } from "@/stores/auth.js";
 import quickEntryCard from "@/components/common/quickEntryCard.vue";
 import { getToken } from "@/utils/auth";
 import { onShow, onLoad, onShareAppMessage } from "@dcloudio/uni-app";
-import { logoUrl, feedbackUrl, sourceCodeUrl, userDefaultData } from "@/const";
+import { logoUrl, feedbackUrl, userDefaultData } from "@/const";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
 import loginBtn from "./component/loginBtn.vue";
 import {questionnaireApi} from "@/api/questionnaire";
@@ -144,7 +138,6 @@ async function login() {
 	await meStore.loginAndAutoSignUp(code, userInfo);
 	meStore.$patch({ inLogin: false });
 	isLogin.value = meStore.user?.id && getToken("refreshToken") !== "";
-	// todo； 成功后关闭
 	isOpen.value = false;
 	// 获取存储的邀请信息
 	const shareId = uni.getStorageSync('shareId');
@@ -187,7 +180,6 @@ function toRankList(option) {
 }
 
 function helpService() {
-	console.log('暂时关闭～');
 	uni.navigateTo({
 		url: "/pages/me/help",
 	});
@@ -201,9 +193,8 @@ function feedbackService() {
 }
 
 function customerChatService() {
-	console.log('暂时关闭～');
 	uni.navigateTo({
-		url: "/pages/me/chat",
+		url: "/pages/chat/index",
 	});
 }
 
@@ -211,12 +202,6 @@ function customerChatService() {
 function supportService() {
 	uni.navigateTo({
 		url: "/pages/me/support",
-	});
-}
-
-function codeService() {
-	uni.navigateTo({
-		url: sourceCodeUrl,
 	});
 }
 
