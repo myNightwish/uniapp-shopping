@@ -54,7 +54,6 @@
 		{
 			"path": "pages/me/modify",
 			"style": {
-				"navigationStyle": "custom",
 				"navigationBarTitleText": "修改资料"
 			}
 		},
