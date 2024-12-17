@@ -167,7 +167,7 @@ function bindFriend(shareId){
 
 function toUpdateUser() {
 	uni.navigateTo({
-		url: "/pages/me/updateUser",
+		url: "/pages/me/modify",
 	});
 	console.log('暂时关闭～');
 }

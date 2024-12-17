@@ -54,7 +54,7 @@ import empty from "@/components/common/empty.vue";
 import { userDefaultData } from "@/const";
 import { omitLongString } from "@/utils/tools";
 import {questionnaireApi} from "@/api/questionnaire";
-import TypeWriter from '../../chat/components/TypeWriter.vue';
+import TypeWriter from '@/components/common/TypeWriter.vue';
 
 const props = defineProps({
 	questionnaireId: {

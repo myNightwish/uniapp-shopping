@@ -38,7 +38,7 @@
 
 <script setup>
 import { computed, watch } from 'vue';
-import TypeWriter from './TypeWriter.vue';
+import TypeWriter from '@/components/common/TypeWriter.vue';
 import { formatTime } from '@/utils/time';
 import CuteEye  from './CuteEye.vue'
 const props = defineProps({
