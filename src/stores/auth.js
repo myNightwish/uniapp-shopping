@@ -35,8 +35,10 @@ export const useAuthStore = defineStore('auth', {
         throw error;
       }
     },
-    setUserInfo(user) {
-      this.user = user;
+    getUserInfo() {
+      return userApi.getCurUserInfo().then((res) => {
+        this.user = res;
+      }).catch(_ => {});
     },
     logout() {
       this.user = {};

@@ -10,26 +10,6 @@ export const userApi = {
     return response;
   },
 
-  // 用户登录
-  async userLogin({ username, password }) {
-    const response = await request({
-      url: '/api/login',
-      method: 'POST',
-      data: { username, password },
-    });
-    return response;
-  },
-
-  // 用户注册
-  async userRegister({ username, password }) {
-    const response = await request({
-      url: '/api/register',
-      method: 'POST',
-      data: { username, password },
-    });
-    return response;
-  },
-
   async loginAndAutoSignUp({ code }) {
     const response = await request({
       url: '/api/loginAndAutoSignUp',

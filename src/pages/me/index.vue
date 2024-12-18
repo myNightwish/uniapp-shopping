@@ -101,12 +101,11 @@
 
 <script setup>
 import { uniLogin } from "@/api/uni.js";
-import { reactive, ref, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth.js";
 import quickEntryCard from "@/components/common/quickEntryCard.vue";
-import { getToken } from "@/utils/auth";
-import { onShow, onLoad, onShareAppMessage } from "@dcloudio/uni-app";
-import { logoUrl, feedbackUrl, userDefaultData } from "@/const";
+import { onLoad, onShareAppMessage } from "@dcloudio/uni-app";
+import { feedbackUrl, userDefaultData } from "@/const";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
 import loginBtn from "./component/loginBtn.vue";
 import {questionnaireApi} from "@/api/questionnaire";
@@ -115,23 +114,20 @@ const meStore = useAuthStore();
 const isLogin = ref(false);
 const infoPopup = ref();
 const isOpen = ref(true);
-
+// onMounted(() => {
+// 		meStore.getUserInfo().then(() => {
+// 		isLogin.value = true;
+// 		if (meStore.user.id) {
+//       isLogin.value = true;  // 更新登录状态
+//     } else {
+//       isLogin.value = false;  // 如果没有 token，用户未登录
+//     }
+// 	});
+// });
 onLoad(async (option) => {
 	if (option?.shareId) {
 		uni.setStorageSync('shareId', +option.shareId);
 	}
-	// 检查 token 是否存在
-  const token = getToken("refreshToken");
-  if (token) {
-    // 如果 token 存在，尝试从本地存储获取用户信息并更新到 store
-    const storedUserInfo = uni.getStorageSync("userInfo");
-    if (storedUserInfo) {
-      meStore.$patch({ user: storedUserInfo });  // 恢复用户信息到 store
-      isLogin.value = true;  // 更新登录状态
-    }
-  } else {
-    isLogin.value = false;  // 如果没有 token，用户未登录
-  }
 });
 
 async function login() {
@@ -141,7 +137,7 @@ async function login() {
 	// 获取存储的邀请信息
 	const shareId = uni.getStorageSync('shareId');
 	const userId = meStore?.user.id;
-
+	// todo: 弹窗邀请好友，最好是放在另一个地方
 	if (shareId && userId) {
 		bindFriend(shareId);
 	}
