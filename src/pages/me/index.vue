@@ -100,7 +100,7 @@
 </template>
 
 <script setup>
-import { uniLogin, getUserProfile } from "@/api/uni.js";
+import { uniLogin } from "@/api/uni.js";
 import { reactive, ref, watch } from "vue";
 import { useAuthStore } from "@/stores/auth.js";
 import quickEntryCard from "@/components/common/quickEntryCard.vue";
@@ -115,29 +115,28 @@ const meStore = useAuthStore();
 const isLogin = ref(false);
 const infoPopup = ref();
 const isOpen = ref(true);
-watch(
-  () => [meStore.user, getToken("refreshToken")],
-  ([user, refreshToken]) => {
-    isLogin.value = user?.id && refreshToken !== "";
-  },
-  { immediate: true }  // 设置 immediate 为 true，初始化时也会执行一次
-);
 
 onLoad(async (option) => {
 	if (option?.shareId) {
 		uni.setStorageSync('shareId', +option.shareId);
 	}
+	// 检查 token 是否存在
+  const token = getToken("refreshToken");
+  if (token) {
+    // 如果 token 存在，尝试从本地存储获取用户信息并更新到 store
+    const storedUserInfo = uni.getStorageSync("userInfo");
+    if (storedUserInfo) {
+      meStore.$patch({ user: storedUserInfo });  // 恢复用户信息到 store
+      isLogin.value = true;  // 更新登录状态
+    }
+  } else {
+    isLogin.value = false;  // 如果没有 token，用户未登录
+  }
 });
 
 async function login() {
-	const userInfo = await getUserProfile();
-	meStore.$patch({ user: userInfo });
 	const { code } = await uniLogin("weixin");
-
-	meStore.$patch({ inLogin: true });
-	await meStore.loginAndAutoSignUp(code, userInfo);
-	meStore.$patch({ inLogin: false });
-	isLogin.value = meStore.user?.id && getToken("refreshToken") !== "";
+	await meStore.loginAndAutoSignUp(code);
 	isOpen.value = false;
 	// 获取存储的邀请信息
 	const shareId = uni.getStorageSync('shareId');

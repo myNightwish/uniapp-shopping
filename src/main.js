@@ -1,64 +1,80 @@
-import {
-	createSSRApp
-} from "vue";
+import { createSSRApp } from "vue";
 import App from "./App.vue";
 import * as Pinia from 'pinia';
 import { useAuthStore } from "@/stores/auth.js";
-import {getExpireInPayload, getToken, setToken} from "@/utils/auth.js";
+import { getExpireInPayload, getToken, setToken } from "@/utils/auth.js";
 
 export function createApp() {
-	const app = createSSRApp(App);
-	app.use(Pinia.createPinia());
-	return {
-		app,
-		Pinia, // 此处必须将 Pinia 返回
-	};
+  const app = createSSRApp(App);
+  app.use(Pinia.createPinia());
+  return {
+    app,
+    Pinia, // 返回 Pinia
+  };
 }
-let inRefresh = false; // 防止重复刷新token
+let isRefreshing = false; // 是否正在刷新Token
+let refreshQueue = []; // 存放待刷新期间的请求队列
 
 uni.addInterceptor("request", {
   async invoke(request) {
     uni.showLoading({ title: "正在请求中..." });
-		const authStore = useAuthStore();
+    const authStore = useAuthStore();
 
-    if (authStore.inLogin || inRefresh) return request; // 如果正在登录或者正在刷新token，则直接返回
+    if (authStore.inLogin) return request; // 正在登录中，直接返回请求
 
-    const timestamp = Math.ceil(+new Date().getTime() / 1000); // 获取当前时间戳
+    const timestamp = Math.ceil(Date.now() / 1000);
 
-    // 1. 处理 accessToken
-    const accessToken = getToken("accessToken"); // 获取accessToken
-    const expInAccessToken = getExpireInPayload(accessToken); // 获取accessToken的过期时间
-    if (timestamp < expInAccessToken) {
-      request.header.Authorization = `Bearer ${accessToken}`; // 如果未过期，直接在请求头中携带accessToken
+    // 获取Tokens
+    const accessToken = getToken("accessToken");
+    const refreshToken = getToken("refreshToken");
+
+    // 判断AccessToken是否过期
+    const expInAccessToken = getExpireInPayload(accessToken);
+    if (accessToken && timestamp < expInAccessToken) {
+      request.header.Authorization = `Bearer ${accessToken}`;
       return request;
     }
 
-    // 2. 处理 refreshToken
-    const refreshToken = getToken("refreshToken"); // 获取refreshToken
-    const expInRefreshToken = getExpireInPayload(refreshToken); // 获取refreshToken的过期时间
-    if (timestamp < expInRefreshToken) {
-      // 如果refreshToken未过期，进行刷新操作
-      inRefresh = true; // 设置刷新标志，避免递归调用
-      try {
-        const response = await refreshAccessToken(refreshToken); // 调用后端刷新Token的API
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
-        
-        // 更新 token
-        setToken("accessToken", newAccessToken);
-        setToken("refreshToken", newRefreshToken);
-        request.header.Authorization = `Bearer ${newAccessToken}`; // 使用新的 accessToken
-      } catch (e) {
-        console.error('Token refresh failed: ', e);
-        redirectToLogin(); // 如果刷新失败，跳转到登录页
-      } finally {
-        inRefresh = false; // 刷新完毕，解除标志
+    // 判断RefreshToken是否过期
+    const expInRefreshToken = getExpireInPayload(refreshToken);
+    if (refreshToken && timestamp < expInRefreshToken) {
+      if (!isRefreshing) {
+        isRefreshing = true;
+
+        try {
+          const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshAccessToken(refreshToken);
+          // 更新 Token
+          setToken("accessToken", newAccessToken);
+          setToken("refreshToken", newRefreshToken);
+
+          // 处理队列中所有等待的请求
+          refreshQueue.forEach(({ resolve }) => resolve(newAccessToken));
+          refreshQueue = [];
+          request.header.Authorization = `Bearer ${newAccessToken}`;
+        } catch (e) {
+          refreshQueue.forEach(({ reject }) => reject(e));
+          refreshQueue = [];
+          redirectToLogin();
+        } finally {
+          isRefreshing = false;
+        }
       }
-    } else {
-      // refreshToken也过期了，需要重新登录
-      redirectToLogin();
+
+      // 如果当前正在刷新，则将请求挂起等待
+      return new Promise((resolve, reject) => {
+        refreshQueue.push({
+          resolve: (token) => {
+            request.header.Authorization = `Bearer ${token}`;
+            resolve(request);
+          },
+          reject: (error) => reject(error),
+        });
+      });
     }
 
-    return request;
+    // 如果RefreshToken也过期，跳转到登录页
+    redirectToLogin();
+    throw new Error("Token过期，需要重新登录");
   },
 
   fail(err) {
@@ -73,20 +89,25 @@ uni.addInterceptor("request", {
   },
 });
 
-// 调用后端的刷新Token接口
+// 刷新AccessToken函数
 async function refreshAccessToken(refreshToken) {
   const response = await uni.request({
-    url: '/api/refresh-token',  // 后端刷新Token的API
-    method: 'POST',
+    url: "/api/refresh-token", // 后端刷新Token的API
+    method: "POST",
     data: { refreshToken },
   });
-  return response[1]; // 返回response data
+
+  if (response[1].statusCode === 200) {
+    return response[1].data;
+  } else {
+    throw new Error("Token刷新失败");
+  }
 }
 
 // 跳转到登录页面
 function redirectToLogin() {
   uni.reLaunch({
-    url: "/pages/me/index",  // 跳转到登录页面
+    url: "/pages/me/index", // 跳转到登录页面
     success: () => {
       uni.showToast({
         title: "登录凭证无效啦",

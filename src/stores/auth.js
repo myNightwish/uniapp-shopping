@@ -1,24 +1,17 @@
 import { defineStore } from 'pinia';
-import { jwtDecode } from 'jwt-decode';
 import { userApi } from '@/api/user.js';  // 引入封装的 API
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: {},
-    token: null,
     inLogin: false,  // 是否正在登录
   }),
-
-  getters: {
-    isAuthenticated: (state) => !!state.token,
-  },
-
   actions: {
     // 设置认证信息
-     async loginAndAutoSignUp(code, userInfo) {
+     async loginAndAutoSignUp(code) {
       try {
         this.inLogin = true;
-        const data = await userApi.loginAndAutoSignUp({ code, userInfo });
+        const data = await userApi.loginAndAutoSignUp({ code });
         if (data && data.accessToken) {
           this.user = data.user;
           this.inLogin = false;
@@ -42,17 +35,11 @@ export const useAuthStore = defineStore('auth', {
         throw error;
       }
     },
-    setToken(token) {
-      this.token = token;
-      uni.setStorageSync('token', token);
-    },
     setUserInfo(user) {
       this.user = user;
-      uni.setStorageSync('user', user);
     },
     logout() {
-      this.token = '';
-      this.user = null;
+      this.user = {};
       uni.removeStorageSync('token');
       uni.removeStorageSync('user');
     }

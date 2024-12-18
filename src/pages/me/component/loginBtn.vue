@@ -1,5 +1,4 @@
 <template>
-	<!--  @click="cancelLogin" -->
 		<view v-if="isOpen" class="login-overlay">
       <view class="login-container">
 				<view class="login-button-container">
@@ -8,7 +7,7 @@
 				<view class="checkbox-container">
           <checkbox @click="toggleAgreement" :checked="isAgreed" class="checkbox"></checkbox>
           <label>已阅读并同意
-            <text class="link">隐私政策</text>、
+            <!-- <text class="link">隐私政策</text>、 -->
             <text class="link">服务协议</text>
           </label>
         </view>

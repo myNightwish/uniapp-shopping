@@ -2,7 +2,7 @@ import { useAuthStore } from '@/stores/auth';
 
 // 服务器基础地址
 const BASE_URL = 'http://localhost:7001'; // 替换为你的实际API地址
-const token = uni.getStorageSync('token'); // 假设 token 存储在 localStorage
+const token = uni.getStorageSync('accessToken'); // 假设 token 存储在 localStorage
 // 请求封装
 export const request = (options) => {
   const userAuthStore = useAuthStore();
