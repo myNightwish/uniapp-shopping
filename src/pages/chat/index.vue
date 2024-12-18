@@ -1,64 +1,54 @@
 <template>
   <view class="chat-container">
-    <!-- 顶部状态栏 -->
-    <!-- <image class="background-image" src="/static/image/avatar/bg.webp" mode="aspectFill" /> -->
-    <view class="chat-content">
-    <!-- 聊天消息列表 -->
     <scroll-view 
-      class="chat-list" 
       scroll-y="true" 
-      :scroll-top="scrollTop"
-      :scroll-into-view="scrollToMessage"
-      :scroll-with-animation="true"
-      @scrolltoupper="onLoadMore"
+      :scroll-into-view="scrollToMessage" 
+      :scroll-with-animation="true" 
+      class="msg-container" 
+      @scroll="onScroll"
     >
-      <view class="messages-wrapper">
-        <view class="loading" v-if="isLoadingHistory">
-          <view class="spinner" />
-          加载历史消息...
-        </view>
-        <MessageItem
-          v-for="(message, index) in chatMessages"
-          :id="'msg-' + message.id"
-          :key="message.id + '-' + message.status"
-          :message="message"
-          @type-complete="onTypeComplete"
-        />
-        <view class="scroll-bottom" v-show="showScrollBottom" @tap="scrollToBottom">
-          <text class="iconfont icon-arrow-down" />
-        </view>
+      <view 
+        class="msg-list" 
+        v-for="msg in chatMessages" 
+        :key="msg.id" 
+        :id="'msg-' + msg.id"
+      >
+        <MessageItem 
+					:message="msg" 
+				/>
       </view>
-    </scroll-view>    <!-- 输入区域 -->
-    <view class="bottom-input" :class="{ 'input-focus': isInputFocused }">
+    </scroll-view>
+    <view class="bottom-input">
       <view class="textarea-container">
-        <textarea
-          v-model="inputMessage"
-          class="input-box"
-          :disabled="isWaitingResponse"
-          :focus="isInputFocused"
-          placeholder="输入你的问题..."
-          auto-height
-          confirm-type="send"
-          fixed="true"  :maxlength="1000"
-          :cursor-spacing="20"
-          @focus="onInputFocus"
-          @blur="onInputBlur"
-          @confirm="sendMessage"
+        <textarea 
+          v-model="inputMessage" 
+          auto-height 
+          confirm-type="send" 
+          @focus="onInputFocus" 
+          @blur="onInputBlur" 
+          @confirm="sendMessage" 
         />
-          <!-- <text class="char-count" :class="{ 'near-limit': inputMessage.length > 900 }">
-            {{ inputMessage.length }}/1000
-          </text> -->
       </view>
-      <button 
+      <button
         class="send-btn"
         :disabled="!canSend"
-        :class="{ 'sending': isWaitingResponse }"
-        @tap="sendMessage"
-      >发送
-        <!-- <text class="iconfont" :class="isWaitingResponse ? 'icon-loading' : 'icon-send'">发送</text> -->
+        @click="sendMessage"
+      >
+        发送
       </button>
     </view>
-    </view>
+		<view v-if="showScrollBottom" @click="scrollToBottom" class="scroll-to-bottom">
+			返回顶部
+		</view>
+    <uni-popup ref="tipPopup" type="dialog">
+      <uni-popup-dialog
+        type="info"
+        title="提示"
+        content="响应失败，请稍后重试！"
+        confirmText="确定"
+        @confirm="tipPopupClose"
+      />
+    </uni-popup>
   </view>
 </template>
 
@@ -68,25 +58,17 @@ import { chatApi } from '@/api/chat';
 import MessageItem from './components/MessageItem.vue';
 import { debounce } from '@/utils/tools';
 
-// 状态管理
 const inputMessage = ref('');
 const chatMessages = ref([]);
-const scrollTop = ref(0);
 const scrollToMessage = ref('');
 const isWaitingResponse = ref(false);
-const isInputFocused = ref(false);
-const isConnected = ref(true);
-const showScrollBottom = ref(false);
 const isLoadingHistory = ref(false);
-const page = ref(1);
 const hasMore = ref(true);
+const page = ref(1);
+const tipPopup = ref(null);
+const showScrollBottom = ref(false); // 控制是否显示“返回底部”按钮
+const canSend = computed(() => inputMessage.value.trim() && !isWaitingResponse.value);
 
-// 计算属性
-const canSend = computed(() => {
-  return inputMessage.value.trim() && !isWaitingResponse.value;
-});
-
-// 消息发送
 const sendMessage = async () => {
   if (!canSend.value) return;
 
@@ -111,21 +93,23 @@ const sendMessage = async () => {
   };
 
   chatMessages.value.push(userMessage, aiMessage);
-  scrollToBottom();
+  await scrollToBottom();
 
   try {
     const { data } = await chatApi.startChat(question);
     aiMessage.conversationId = data.conversationId;
     await queryResult(aiMessage);
   } catch (error) {
-    aiMessage.status = 'failed';
-    aiMessage.error = error.message || '发送失败';
+    tipPopup.value.open();
+		updateMessage(aiMessage.id, {
+      status: 'failed',
+      error: error.message || '发送失败'
+    });
   } finally {
     isWaitingResponse.value = false;
   }
 };
 
-// 查询结果
 const queryResult = async (message) => {
   const maxRetries = 30;
   let retryCount = 0;
@@ -134,39 +118,45 @@ const queryResult = async (message) => {
     try {
       const { data } = await chatApi.queryResult(message.conversationId);
       if (data.status === 'completed') {
-        message.status = 'completed';
-        message.content = data.answer;
-        scrollToBottom();
-        return true;
+				updateMessage(message.id, {
+          status: 'completed',
+          content: data.answer
+        });
+        return;
+				
       } else if (data.status === 'failed') {
-        message.status = 'failed';
-        message.error = data.error || '生成失败';
+				updateMessage(message.id, {
+          status: 'failed',
+          error: data.error || '生成失败'
+        });
         return true;
       }
-      
+
       if (retryCount < maxRetries) {
         retryCount++;
         await new Promise(resolve => setTimeout(resolve, 2000));
         return query();
       } else {
-        message.status = 'failed';
-        message.error = '响应超时';
-        return true;
+				updateMessage(message.id, {
+          status: 'failed',
+          error: '响应超时'
+        });
       }
     } catch (error) {
-      message.status = 'failed';
-      message.error = error.message || '查询失败';
-      return true;
+
+			updateMessage(message.id, {
+        status: 'failed',
+        error: error.message || '查询失败'
+      });
     }
   };
 
-  return query();
+  await query();
 };
 
-// 加载历史消息
 const loadHistory = async () => {
   if (!hasMore.value || isLoadingHistory.value) return;
-  
+
   isLoadingHistory.value = true;
   try {
     const { data } = await chatApi.getHistory(page.value);
@@ -179,151 +169,93 @@ const loadHistory = async () => {
       type: item.type,
       content: item.content,
       status: 'completed',
-      timestamp: new Date(item.timestamp),
-      isHistorical: item.isHistorical
+      timestamp: new Date(item.timestamp)
     }));
     
     chatMessages.value.unshift(...formattedMessages);
     page.value++;
   } catch (error) {
-    uni.showToast({
-      title: '加载历史消息失败',
-      icon: 'none'
-    });
+    uni.showToast({ title: '加载历史消息失败', icon: 'none' });
   } finally {
     isLoadingHistory.value = false;
   }
 };
 
-// 滚动相关
-// const scrollToBottom = debounce(() => {
-//   nextTick(() => {
-//     const lastMessage = chatMessages.value[chatMessages.value.length - 1];
-//     console.log('lastMessage: ', lastMessage);
-//     if (lastMessage && lastMessage.id) {
-//       scrollToMessage.value = 'msg-' + lastMessage.id;
-//     }
-//   });
-// }, 100);
-const scrollToBottom = () => {
-  nextTick(() => {
-    const lastMessage = chatMessages.value[chatMessages.value.length - 1];
-    if (lastMessage && lastMessage.id) {
-      scrollToMessage.value = 'msg-' + lastMessage.id;
-    }
-  })
+const scrollToBottom = async () => {
+  await nextTick();
+  const lastMessage = chatMessages.value[chatMessages.value.length - 1];
+  if (lastMessage) {
+    scrollToMessage.value = 'msg-' + lastMessage.id;
+  }
 };
 
 const onScroll = debounce((e) => {
-  const { scrollTop: top, scrollHeight, height } = e.detail;
-  showScrollBottom.value = top < scrollHeight - height - 100;
+  const { scrollTop, scrollHeight, clientHeight } = e.detail;
+  if (scrollTop + clientHeight >= scrollHeight - 100) {
+    showScrollBottom.value = false;
+  } else {
+    showScrollBottom.value = true;
+  }
 }, 100);
 
-// 输入框事件
-const onInputFocus = () => {
-  isInputFocused.value = true;
-  scrollToBottom();
-};
+const onInputFocus = () => scrollToBottom();
+const onInputBlur = () => {};
 
-const onInputBlur = () => {
-  isInputFocused.value = false;
-};
+// 加载历史记录
+onMounted(() => loadHistory());
 
-const onTypeComplete = () => {
-  scrollToBottom();
-};
+// 监听消息变化
+watch(chatMessages, () => scrollToBottom(), { deep: true });
 
-// 清空聊天
-const clearChat = () => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要清空聊天记录吗？',
-    success: (res) => {
-      if (res.confirm) {
-        chatMessages.value = [];
-      }
-    }
-  });
+const updateMessage = (messageId, updates) => {
+  const index = chatMessages.value.findIndex(msg => msg.id === messageId);
+  if (index !== -1) {
+    // 用 `Vue.set` 的形式触发响应式更新
+    chatMessages.value[index] = { ...chatMessages.value[index], ...updates };
+  }
 };
-
-// 生命周期
-onMounted(() => {
-  loadHistory();
-});
 </script>
 
 <style lang="scss" scoped>
 .chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;  /* 使其填充整个视口高度 */
-  overflow-y: auto;  /* 允许垂直滚动 */
-  margin-bottom: 60rpx;  /* 给底部留些空间 */
-}
-
-.background-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.chat-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-
-.chat-list {
-  flex: 1;
-}
-
-@keyframes bounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-10rpx); }
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(0.95); }
-  100% { transform: scale(1); }
-}
-
-.bottom-input {
+	.msg-container {
+		padding: 20px 5px 100px 5px;
+		height: calc(100vh - 120px);
+		scroll-view {
+			height: 100%;
+		}
+	}
+	.bottom-input {
 		display: flex;
-    align-items: center;
-    justify-content: space-between;
+		align-items: flex-end;
 		position: fixed;
-		bottom: 0;
-    left: 0;
-    right: 0;
+		bottom: 0px;
 		background-color: #fbfbfb;
-		padding: 20px 12px;
+		padding: 20px;
 		box-shadow: 0px -10px 30px #eeeeee;
 		.textarea-container {
-      width: calc(100vw - 100px);
-      flex: 1;
 			background-color: #ffffff;
-			margin-right: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0px -10px 30px #eeeeee;
+			padding: 10px;
 			textarea {
-				width: 100%;
+				width: calc(100vw - 146px);
 				background-color: #ffffff;
 			}
 		}
-    .send-btn {
-      width: 70px;
-      height: 40px;
-      line-height: 34px;
-      background-color: #ffffff;
-      border: 3px solid #0256ff;
-      color: #0256ff;
-    }
 	}
+	.scroll-to-bottom {
+		position: fixed;
+    bottom: 60px;
+		left: 0;
+		bottom: 120px;
+		width: 20px;
+		height: 20px;
+		font-size: 10px;
+		background-color: #007bff;
+		color: white;
+		padding: 10px;
+		border-radius: 50%;
+		text-align: center;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	}
+}
 </style>

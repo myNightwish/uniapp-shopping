@@ -37,23 +37,23 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed } from 'vue';
 import TypeWriter from '@/components/common/TypeWriter.vue';
 import { formatTime } from '@/utils/time';
-import CuteEye  from './CuteEye.vue'
+import CuteEye  from './CuteEye.vue';
+import { useAuthStore } from "@/stores/auth";
+
+const meStore = useAuthStore();
 const props = defineProps({
   message: {
     type: Object,
     required: true
   }
 });
-watch(() => props.message, (newVal) => {
-  console.log('Message updated:', newVal);
-}, { deep: true });
 
 const avatarSrc = computed(() => {
   return props.message.type === 'user' 
-    ? '/static/image/avatar/user-avatar.jpg'
+    ? meStore.user.avatarUrl || '/static/image/avatar/user-avatar.jpg'
     : '/static/image/avatar/ai-avatar.jpg';
 });
 </script>

@@ -39,7 +39,7 @@ export const homeIconsList = [
 	{
 		icon: '/static/image/homeIcons/qa.png',
 		name: '心理问答',
-		path: '/pages/index/chatGPT',
+		path: '/pages/chat/index',
 		isTab: false
 	}
 ]

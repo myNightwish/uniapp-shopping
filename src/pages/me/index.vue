@@ -173,9 +173,9 @@ function toUpdateUser() {
 
 function toRankList(option) {
 	console.log('暂时关闭～');
-	uni.navigateTo({
-		url: `/pages/rankList?type=${option}`,
-	});
+	// uni.navigateTo({
+	// 	url: `/pages/rankList?type=${option}`,
+	// });
 }
 
 function helpService() {

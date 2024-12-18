@@ -40,7 +40,6 @@
 			<TypeWriter 
 				:text="analysisResult.content" 
 				class="type-writer-wrapper"
-				@complete="handleComplete"
 			/>
 		</view>
 	</view>
@@ -171,9 +170,6 @@ function checkboxChange(e) {
 			friendList.value[i].disabled = false;
 		}
 	}
-}
-function handleComplete() {
-	console.log('9999--')
 }
 </script>
 

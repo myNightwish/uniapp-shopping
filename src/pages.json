@@ -58,12 +58,6 @@
 			}
 		},
 		{
-			"path": "pages/index/chatGPT",
-			"style": {
-				"navigationBarTitleText": "心理咨询"
-			}
-		},
-		{
 			"path": "pages/show/index",
 			"style": {
 				"navigationBarTitleText": "可视化mock"
@@ -79,12 +73,6 @@
 			"path": "pages/me/rankList",
 			"style": {
 				"navigationBarTitleText": "排行榜"
-			}
-		},
-		{
-			"path": "pages/me/customerChatService",
-			"style": {
-				"navigationBarTitleText": "智能客服"
 			}
 		},
 		{

@@ -99,7 +99,6 @@ function textInputChange(e, qIdx) {
 	};
 }
 async function submit() {
-	console.log("result: ", answers.value);
 	const len = questions.value.length;
 
 	for (let i = 0; i < len; i++) {

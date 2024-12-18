@@ -84,7 +84,6 @@ const noCompleted = computed(() => {
 });
 function write(questionnaireId) {
 	const userId = meStore.user?.id;
-	console.log('userId---', meStore.user)
 	uni.navigateTo({
 		url: `/pages/questionnaire/write?questionnaireId=${questionnaireId}&ownerId=${userId}&shareId=${userId}`,
 	});
