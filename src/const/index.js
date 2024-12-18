@@ -7,7 +7,7 @@ export const userDefaultData = {
 };
 
 export const logoUrl = "/static/logo.jpg";
-export const ossHost = "https://oss.justin3go.com";
+export const ossHost = "https://mynightwish.oss-cn-beijing.aliyuncs.com";
 export const banners = [
 	"https://gd-hbimg.huaban.com/fcf6e09f17da2ec355206b468fa345d876ee7b5f17c47-2ypoiV_fw480webp",
 	"https://gd-hbimg.huaban.com/43ab6070b44b2f9ed930f89d2fd47c74f30d30a94cb42-U4KHsc_fw480webp"
@@ -48,8 +48,7 @@ export const firstRank = '/static/image/list/first.png'
 export const secondRank = '/static/image/list/second.png'
 export const thirdRank = '/static/image/list/third.png'
 
-export const feedbackUrl = 'https://xh4u7d54le.feishu.cn/share/base/form/shrcntq0JjHrPv50gsBhU5yVRrc'
-
+export const feedbackUrl = 'https://s16lcff6dxs.feishu.cn/share/base/form/shrcn1e65mKwsG63NJB01kLbM3c'
 export const wxMoney = '/static/wechatCode.jpg'
 
 export const chatType = {

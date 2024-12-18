@@ -1,4 +1,4 @@
-import request from '@/api/index.js';
+import { request } from '@/utils/request';
 
 export const questionnaireApi = {
   // 初始化

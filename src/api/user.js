@@ -1,4 +1,4 @@
-import request from '@/api/index.js';
+import { request } from '@/utils/request';
 
 export const userApi = {
   // 获取当前用户信息
@@ -39,3 +39,11 @@ export const userApi = {
     return response;
   }
 };
+export const updateUserInfo = async (data = {}) => {
+  const response = await request({
+    url: '/api/wxUser/update',
+    method: 'POST',
+    data: { ...data },
+  });
+  return response;
+}

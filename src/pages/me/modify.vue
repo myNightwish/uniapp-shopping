@@ -20,7 +20,11 @@
 		<one-row-card :right-text-width="'60px'">
 			<template #left>昵称</template>
 			<template #rightText>
-				<input type="nickname" placeholder="新用户" v-model="user.nickName" @blur="handleNickNameChange" />
+				<input type="nickname" placeholder="新用户"
+					v-model="user.nickName"
+					@blur="handleNickNameChange"
+					@input="handleNickNameChange"
+				/>
 			</template>
 			<template #rightIcon>
 				<uni-icons type="compose" size="30" color="#D3D3D3"></uni-icons>
@@ -39,22 +43,30 @@ import { uniUploadFile } from "@/api/uni.js";
 import { isValidKey } from "@/utils/tools";
 import { getStringWidth } from "@/utils/tools";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
-const HOST_URL = "http://127.0.0.1:7001"
+import {getOosConfig} from '@/api/oos.js';
+import {updateUserInfo} from '@/api/user.js';
+
 const meStore = useAuthStore();
-const user = reactive({});
+const user = reactive(JSON.parse(JSON.stringify(meStore.user || {})));
 
 function onChooseAvatar(e) {
   user.avatarUrl = e.detail.avatarUrl;
 }
 
 function handleNickNameChange(e) {
+	if(user.nickName === e.detail.value) return;
   user.nickName = e.detail.value;
 }
 
 async function save() {
+	const oldUser = meStore.user || {};
+	if(oldUser?.avatarUrl === user.avatarUrl
+	&& user.nickName === oldUser.nickName) {
+		return;
+	}
   const len = getStringWidth(user.nickName);
   
-  if (len > 10 || len === 0) {
+  if (len > 20 || len === 0) {
     uni.showToast({
       title: "昵称过长，请修改",
       icon: "error",
@@ -63,32 +75,63 @@ async function save() {
     throw new Error("昵称长度错误");
   }
 
-  // if (meStore.user?.avatarUrl !== user.avatarUrl) {
-  //   // 模拟头像上传（返回静态的头像 URL）
-  //   user.avatarUrl = await uploadAvatar(user.avatarUrl);
-  // }
+  if (oldUser?.avatarUrl !== user.avatarUrl) {
+    // 模拟头像上传（返回静态的头像 URL）
+    user.avatarUrl = await uploadAvatar(user.avatarUrl);
+  }
 
-  // 模拟用户更新参数
-  // const userParams = {};
-  // Object.entries(user).forEach(([key, val]) => {
-  //   if (isValidKey(key, mockUserData)) {
-  //     if (mockUserData[key] !== val) {
-  //       userParams[key] = val;
-  //     }
-  //   }
-  // });
-
-
-  meStore.$patch({ user });
-  uni.navigateBack({
-    delta: 1,
+  // 用户更新参数
+  const userParams = {};
+  Object.entries(user).forEach(([key, val]) => {
+    if (isValidKey(key, oldUser)) {
+      if (oldUser[key] !== val) {
+        userParams[key] = val;
+      }
+    }
   });
+	// 3. 调用服务端接口更新用户信息
+  const res = await updateUserInfo(userParams);
+  if (res.success && res.data) {
+    uni.showToast({
+      title: '更新成功',
+      icon: 'success',
+    });
+		meStore.$patch({ user: res.data });
+		uni.navigateBack({
+			delta: 1,
+		});
+  } else {
+    uni.showToast({
+      title: `更新失败：${res.data.message}`,
+      icon: 'error',
+    });
+    throw new Error(res.data.message);
+  }
 }
 
 async function uploadAvatar(filePath) {
-  console.log("模拟上传头像: ", filePath);
-  // 模拟返回 OSS 上传后的头像 URL
-  return "https://example.com/oss-avatar.jpg";
+  // 1. 获取上传参数
+	const response =await getOosConfig();
+  const { OSSAccessKeyId, policy, signature } = response;
+
+		// 2. 上传文件至阿里云 OSS
+		const key = `user-avatars/${Date.now()}.${filePath.split('.').pop()}`;
+		const ossRes = await uniUploadFile({
+			url: ossHost,
+			filePath,
+			name: 'file',
+			formData: {
+				key,
+				policy,
+				OSSAccessKeyId,
+				signature,
+			},
+		});
+		if (ossRes.statusCode === 204) {
+			return ossHost + `/${key}`;
+		} else {
+			throw new Error('上传失败');
+		}
 }
 
 function logout() {

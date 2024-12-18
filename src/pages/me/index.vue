@@ -169,7 +169,6 @@ function toUpdateUser() {
 	uni.navigateTo({
 		url: "/pages/me/modify",
 	});
-	console.log('暂时关闭～');
 }
 
 function toRankList(option) {
@@ -186,7 +185,6 @@ function helpService() {
 }
 
 function feedbackService() {
-	console.log('暂时关闭～');
 	uni.navigateTo({
 		url: feedbackUrl,
 	});
