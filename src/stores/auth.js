@@ -4,17 +4,15 @@ import { userApi } from '@/api/user.js';  // 引入封装的 API
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: {},
-    inLogin: false,  // 是否正在登录
+    isLoginPopupVisible: false,  // 是否显示登录弹窗
   }),
   actions: {
     // 设置认证信息
      async loginAndAutoSignUp(code) {
       try {
-        this.inLogin = true;
         const data = await userApi.loginAndAutoSignUp({ code });
         if (data && data.accessToken) {
           this.user = data.user;
-          this.inLogin = false;
           uni.setStorageSync('accessToken', data.accessToken);
           uni.setStorageSync('refreshToken', data.refreshToken);
           return data;
@@ -26,7 +24,6 @@ export const useAuthStore = defineStore('auth', {
           });
         }
       } catch (error) {
-        this.inLogin = false;
         uni.showToast({
           title: `登录失败catch: ${error}`,
           icon: "error",
@@ -44,6 +41,14 @@ export const useAuthStore = defineStore('auth', {
       this.user = {};
       uni.removeStorageSync('token');
       uni.removeStorageSync('user');
+    }, 
+    // 显示登录弹窗
+    showLoginPopup() {
+      this.isLoginPopupVisible = true;
+    },
+    // 隐藏登录弹窗
+    hideLoginPopup() {
+      this.isLoginPopupVisible = false;
     }
   }
 });

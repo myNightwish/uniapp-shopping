@@ -6,10 +6,10 @@
 						<image
 							class="avatar"
 							style="height: 60px; width: 60px; border-radius: 50%"
-							:src="meStore.user.avatarUrl || userDefaultData.avatarUrl"
+							:src="userInfo.avatarUrl || userDefaultData.avatarUrl"
 						></image>
 						<view class="text-info">
-							<view class="nick-name">昵称：{{ meStore.user?.nickName || userDefaultData.nickName }}</view>
+							<view class="nick-name">昵称：{{ userInfo.nickName || userDefaultData.nickName }}</view>
 						</view>
 					</view>
 					<view class="icon" @click="toUpdateUser">
@@ -96,69 +96,24 @@
 				></uni-popup-dialog>
 			</uni-popup>
 		</view>
-		<loginBtn :isOpen="isOpen && !isLogin" @login="login" @cancel="cancelLogin"></loginBtn>
 </template>
 
 <script setup>
-import { uniLogin } from "@/api/uni.js";
-import { ref, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useAuthStore } from "@/stores/auth.js";
 import quickEntryCard from "@/components/common/quickEntryCard.vue";
 import { onLoad, onShareAppMessage } from "@dcloudio/uni-app";
 import { feedbackUrl, userDefaultData } from "@/const";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
-import loginBtn from "./component/loginBtn.vue";
-import {questionnaireApi} from "@/api/questionnaire";
 
 const meStore = useAuthStore();
-const isLogin = ref(false);
 const infoPopup = ref();
-const isOpen = ref(true);
-// onMounted(() => {
-// 		meStore.getUserInfo().then(() => {
-// 		isLogin.value = true;
-// 		if (meStore.user.id) {
-//       isLogin.value = true;  // 更新登录状态
-//     } else {
-//       isLogin.value = false;  // 如果没有 token，用户未登录
-//     }
-// 	});
-// });
 onLoad(async (option) => {
 	if (option?.shareId) {
 		uni.setStorageSync('shareId', +option.shareId);
 	}
 });
-
-async function login() {
-	const { code } = await uniLogin("weixin");
-	await meStore.loginAndAutoSignUp(code);
-	isOpen.value = false;
-	// 获取存储的邀请信息
-	const shareId = uni.getStorageSync('shareId');
-	const userId = meStore?.user.id;
-	// todo: 弹窗邀请好友，最好是放在另一个地方
-	if (shareId && userId) {
-		bindFriend(shareId);
-	}
-}
-const cancelLogin = () => {
-	isOpen.value = false;
-};
-
-function bindFriend(shareId){
-	questionnaireApi.addFriends({
-		shareId 
-	}).then(res => {
-		uni.showToast({
-      title: res.message,
-      icon: "none",
-      duration: 2000,
-    });
-	}).finally(_ => {
-		uni.removeStorageSync('shareId');
-	})
-}
+const userInfo = computed(() => meStore.user);
 
 function toUpdateUser() {
 	uni.navigateTo({

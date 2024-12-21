@@ -7,7 +7,7 @@ export const userApi = {
       url: '/api/user/info',
       method: 'GET',
     });
-    return response;
+    return response.data;
   },
 
   async loginAndAutoSignUp({ code }) {
@@ -22,6 +22,24 @@ export const userApi = {
 export const updateUserInfo = async (data = {}) => {
   const response = await request({
     url: '/api/wxUser/update',
+    method: 'POST',
+    data: { ...data },
+  });
+  return response;
+}
+
+export const refreshAccessToken = async(refreshToken) => {
+  const response = await request({
+    url: '/api/refresh-token',
+    method: 'POST',
+    data: { refreshToken },
+  });
+  return response.data;
+};
+
+export const addFriends = async(data = {}) => {
+  const response = await request({
+    url: '/api/questionnaire/addfriends',
     method: 'POST',
     data: { ...data },
   });

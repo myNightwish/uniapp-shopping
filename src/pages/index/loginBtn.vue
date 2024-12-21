@@ -1,5 +1,5 @@
 <template>
-		<view v-if="isOpen" class="login-overlay">
+		<view v-if="meStore.isLoginPopupVisible" class="login-overlay">
       <view class="login-container">
 				<view class="login-button-container">
 					<button @click.stop="login" class="login-button">一键登录/注册</button>
@@ -15,32 +15,50 @@
     </view>
 </template>
 
-<script>
-export default {
-	data() {
-		return {
-			isAgreed: false, // 用户协议选择状态
-		};
-	},
-  props: {
-		isOpen: {
-			type: Boolean,
-			default: false,
-		},
-	},
-	methods: {
-		login() {
-			if (!this.isAgreed) return;
-      this.$emit("login");
-		},
-		cancelLogin() {
-      this.$emit("cancel");
-		},
-    toggleAgreement() {
-			this.isAgreed = !this.isAgreed;
-		},
-	},
-};
+<script setup>
+import { uniLogin } from "@/api/uni.js";
+import { ref } from "vue";
+import { useAuthStore } from "@/stores/auth.js";
+import { onLoad } from "@dcloudio/uni-app";
+import { checkUserAuth } from '@/utils/auth.js';
+import { addFriends } from "@/api/user";
+
+const meStore = useAuthStore();
+const isAgreed = ref(false);
+
+onLoad(() => {
+	checkUserAuth(); // 检查用户身份并决定是否弹出登录框
+});
+const cancelLogin = () => {
+	meStore.hideLoginPopup();
+}
+const toggleAgreement = () => {
+	isAgreed.value = !isAgreed.value;
+}
+const login = async () => {
+	if (!isAgreed.value) return;
+	const { code } = await uniLogin("weixin");
+	await meStore.loginAndAutoSignUp(code);
+	meStore.hideLoginPopup();
+	// todo: 弹窗邀请好友，最好是放在另一个地方
+	// 获取存储的邀请信息
+	const shareId = uni.getStorageSync('shareId');
+	const userId = meStore?.user.id;
+	if (shareId && userId) {
+		bindFriend(shareId);
+	}
+}
+const bindFriend = (shareId) =>{
+	addFriends({ shareId }).then(res => {
+		uni.showToast({
+      title: res.message,
+      icon: "none",
+      duration: 2000,
+    });
+	}).finally(_ => {
+		uni.removeStorageSync('shareId');
+	})
+}
 </script>
 
 <style lang="scss" scoped>

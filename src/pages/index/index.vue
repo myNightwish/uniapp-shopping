@@ -61,6 +61,7 @@
 				@confirm="confirmNews"
 			></uni-popup-dialog>
 		</uni-popup>
+		<loginBtn></loginBtn>
 	</view>
 </template>
 
@@ -73,6 +74,7 @@ import { onPullDownRefresh, onShow, onUnload } from "@dcloudio/uni-app";
 import { getNews, setNews } from "@/utils/news";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
 import { useAuthStore } from "@/stores/auth.js";
+import loginBtn from "./loginBtn.vue";
 
 const meStore = useAuthStore();
 const mockNewsData = [

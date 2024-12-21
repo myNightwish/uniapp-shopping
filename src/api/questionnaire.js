@@ -59,14 +59,6 @@ export const questionnaireApi = {
     });
     return response.data;
   },
-  async addFriends(data = {}) {
-    const response = await request({
-      url: '/api/questionnaire/addfriends',
-      method: 'POST',
-      data: { ...data },
-    });
-    return response;
-  },
   async getQuestionnaireAnalysis(params = {}) {
     // 构建查询字符串
     const queryString = Object.keys(params)
