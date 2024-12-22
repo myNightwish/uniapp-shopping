@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { userApi } from '@/api/user.js';  // 引入封装的 API
+import { setToken } from '@/utils/auth'; // 自定义 Token 管理工具
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -13,8 +14,8 @@ export const useAuthStore = defineStore('auth', {
         const data = await userApi.loginAndAutoSignUp({ code });
         if (data && data.accessToken) {
           this.user = data.user;
-          uni.setStorageSync('accessToken', data.accessToken);
-          uni.setStorageSync('refreshToken', data.refreshToken);
+          setToken('accessToken',  data.accessToken);
+          setToken('refreshToken', data.refreshToken);
           return data;
         } else {
           uni.showToast({
@@ -39,8 +40,6 @@ export const useAuthStore = defineStore('auth', {
     },
     logout() {
       this.user = {};
-      uni.removeStorageSync('token');
-      uni.removeStorageSync('user');
     }, 
     // 显示登录弹窗
     showLoginPopup() {

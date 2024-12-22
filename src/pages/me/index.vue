@@ -56,7 +56,7 @@
 								<uni-icons type="paperplane" size="35" color="#030a27"></uni-icons>
 							</view>
 						</button>
-						<view class="service-title">添加好友</view>
+					  <view class="service-title">添加好友</view>
 					</view>
 					<view class="service-li">
 						<view class="service-icon" @click="customerChatService">
@@ -102,7 +102,7 @@
 import { ref, computed } from "vue";
 import { useAuthStore } from "@/stores/auth.js";
 import quickEntryCard from "@/components/common/quickEntryCard.vue";
-import { onLoad, onShareAppMessage } from "@dcloudio/uni-app";
+import { onLoad } from "@dcloudio/uni-app";
 import { feedbackUrl, userDefaultData } from "@/const";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
 
@@ -165,13 +165,6 @@ function moreService() {
 	});
 }
 
-onShareAppMessage(() => {
-	const userId = meStore.user?.id;
-	return {
-		title: "快来加我好友吧",
-		path: `/pages/me/index?shareId=${userId}`,
-	};
-});
 </script>
 
 <style lang="scss" scoped>

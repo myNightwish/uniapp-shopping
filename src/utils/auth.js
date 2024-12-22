@@ -30,7 +30,6 @@ export const checkUserAuth = async () => {
   const accessToken = getToken('accessToken');
   const refreshToken = getToken('refreshToken');
   const authStore = useAuthStore();
-  console.log('999', authStore)
 
   if (!accessToken && !refreshToken) {
     // 无 Token，直接显示登录弹窗

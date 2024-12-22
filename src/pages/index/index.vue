@@ -23,7 +23,9 @@
 				</view>
 			</view>
 			<view class="user-right">
-				<!-- todo: 添加好友 -->
+						<button class="share-btn" open-type="share">
+							添加好友
+						</button>
 			</view>
 		</view>
 		<!-- 首页金刚位 -->
@@ -70,7 +72,7 @@ import { ref} from "vue";
 import { userDefaultData, banners, homeIconsList } from "@/const";
 import OneRowCard from "@/components/common/oneRowCard.vue";
 import empty from "@/components/common/empty.vue";
-import { onPullDownRefresh, onShow, onUnload } from "@dcloudio/uni-app";
+import { onPullDownRefresh, onShow, onUnload, onShareAppMessage } from "@dcloudio/uni-app";
 import { getNews, setNews } from "@/utils/news";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
 import { useAuthStore } from "@/stores/auth.js";
@@ -87,7 +89,13 @@ const mockNewsData = [
 		content: "消息 2",
 	},
 ];
-
+onShareAppMessage(() => {
+	const userId = meStore.user?.id;
+	return {
+		title: "快来跟我成为好友吧",
+		path: `/pages/me/index?shareId=${userId}`,
+	};
+});
 const news = ref(getNews() || mockNewsData); // 消息数据
 const newsPopup = ref();
 const curNewsId = ref("");
@@ -180,11 +188,28 @@ function toJump(url, isTab) {
 	}
 
 	.user-right {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-left: 18px;
 		width: 120px;
 		font-size: 15px;
-		display: flex;
-		justify-content: space-around;
-		align-items: baseline;
+		.share-btn {
+			padding-left: 0;
+			padding-right: 0;
+			height: 56px;
+			line-height: 56px;
+			width: 100px;
+			background-color: #fff;
+			border: 2px solid #0256ff;
+			color: #0256ff;
+			font-weight: 600;
+		}
+
+		.share-btn::after {
+			border: none;
+		}
+
 		.questionnaire-container {
 			margin-right: 10px;
 			.questionnaire-count {
@@ -212,7 +237,7 @@ function toJump(url, isTab) {
 
 .common-container {
 	display: flex;
-	justify-content: space-around;
+	justify-content: space-between;
 	align-items: center;
 	margin-top: 10px;
 	background-color: #ffffff;

@@ -1,4 +1,4 @@
-import { getToken, setToken, removeToken } from './auth'; // 自定义 Token 管理工具
+import { getToken, setToken, removeToken } from '@/utils/auth'; // 自定义 Token 管理工具
 import {refreshAccessToken} from '@/api/user';
 let isRefreshing = false; // 是否正在刷新 Token
 let refreshQueue = []; // 等待刷新 Token 的请求队列
@@ -74,9 +74,7 @@ const beforeRequest = (options) => {
       });
     });
   } else {
-    // 如果 Token 都不存在或失效，直接跳转登录
-    redirectToLogin('未登录或 Token 已过期');
-    // throw new Error('Token失效');
+    redirectToLogin();
   }
 
   return options;
@@ -90,7 +88,7 @@ const handleResponse = (res, resolve, reject) => {
   } else if (statusCode === 401) {
     // 处理未授权（401）错误，通常表示 Token 无效或过期
     redirectToLogin('登录已过期，请重新登录');
-    reject(new Error(data.message || '未授权'));
+    // reject(new Error(data.message || '未授权'));
   } else {
     reject(new Error(data.message || '请求失败'));
   }
