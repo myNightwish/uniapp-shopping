@@ -43,14 +43,6 @@ export const questionnaireApi = {
     });
     return response;
   },
-  // 获取朋友列表
-  async getFriendsList() {
-    const response = await request({
-      url: '/api/questionnaire/friends',
-      method: 'GET',
-    });
-    return response.data;
-  },
   async analyzeQuestionnaire(data = {}) {
     const response = await request({
       url: '/api/questionnaire/analyze',

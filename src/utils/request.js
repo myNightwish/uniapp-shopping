@@ -106,7 +106,7 @@ const checkTokenValid = (token) => {
 const redirectToLogin = (message) => {
   removeToken();
   uni.reLaunch({
-    url: '/pages/me/index',
+    url: '/pages/index/index',
     success: () => {
       uni.showToast({ title: message, duration: 2000 });
     },
