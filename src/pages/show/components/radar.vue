@@ -105,7 +105,7 @@ watch(() => props.questionnaireId,
 })
 
 onMounted(() => {
-	friendStore.fetchFriendList();
+	friendStore.fetchFriendsQuestionnaire();
 });
 
 function see() {

@@ -1,136 +1,106 @@
 <template>
-	<view class="rank-list-container">
+	<view class="show-container">
 		<view class="questionnaire-select">
-			<uni-data-select v-model="curValue" :localdata="range" @change="chooseQuestionnaire"></uni-data-select>
+			<uni-data-select v-model="curQuestionnaireId" :localdata="range" @change="chooseQuestionnaire"></uni-data-select>
 		</view>
 		<view class="top-placeholder"></view>
-		<view v-show="!curQuestionnaireId" class="no-data">
-			<empty info="请先选择问卷"></empty>
-		</view>
-		<view v-if="curQuestionnaireId && !rankData[curQuestionnaireId]?.length" class="no-data">
-			<empty info="暂无排行，请先分享或帮助好友填写问卷"></empty>
-		</view>
-		<view class="rank-list" v-for="(item, index) in rankData[curQuestionnaireId]" :key="item.id">
-			<view class="rank-item">
-				<view class="info">
-					<view class="order">
-						<view v-if="index === 0">
-							<image :src="firstRank"></image>
+		<view class="chart-container">
+			<view v-if="showType" :questionnaire-id="curQuestionnaireId"></view>
+			<view v-else class="no-data">
+				<empty info="请先选择问卷"></empty>
+			</view>
+			<view v-if="curQuestionnaireId && !rankData[curQuestionnaireId]?.length" class="no-data">
+				<empty info="暂无排行，请先分享或帮助好友填写问卷"></empty>
+			</view>
+			<view class="rank-list" v-for="(item, index) in rankData[curQuestionnaireId]" :key="item.id">
+				<view class="rank-item">
+					<view class="info">
+						<view class="order">
+							<view v-if="index === 0">
+								<image :src="firstRank"></image>
+							</view>
+							<view v-else-if="index === 1">
+								<image :src="secondRank"></image>
+							</view>
+							<view v-else-if="index === 2">
+								<image :src="thirdRank"></image>
+							</view>
+							<view class="number" v-else> {{ index + 1 }} </view>
 						</view>
-						<view v-else-if="index === 1">
-							<image :src="secondRank"></image>
+						<view class="avatar">
+							<image
+								style="height: 50px; width: 50px; border-radius: 25px"
+								:src="item.avatarUrl || userDefaultData.avatarUrl"
+							></image>
 						</view>
-						<view v-else-if="index === 2">
-							<image :src="thirdRank"></image>
-						</view>
-						<view class="number" v-else> {{ index + 1 }} </view>
+						<view class="nick-name">{{ item.nickName }}</view>
 					</view>
-					<view class="avatar">
-						<image
-							style="height: 50px; width: 50px; border-radius: 25px"
-							:src="item.avatarUrl || userDefaultData.avatarUrl"
-						></image>
-					</view>
-					<view class="nick-name">{{ item.nickName }}</view>
+					<view class="similarity">{{ item.totalScore }}</view>
 				</view>
-				<view class="similarity">{{ (item.similarity / 100).toFixed(2) }}</view>
 			</view>
 		</view>
 	</view>
 </template>
+
 <script setup>
-import { onLoad } from "@dcloudio/uni-app";
-import { ref, watch } from "vue";
-// import { useQuery } from "villus";
-// import { meGQL } from "@/graphql/questionnaire.graphql";
-// import { listAsOwnerGQL, listAsFriendGQL } from "@/graphql/me.graphql";
-import { userDefaultData, firstRank, secondRank, thirdRank } from "@/const";
+import { ref, onMounted, watch} from "vue";
 import empty from "@/components/common/empty.vue";
+import { userDefaultData, firstRank, secondRank, thirdRank } from "@/const";
 
-const meOrOther = ref("me");
+import {questionnaireApi} from "@/api/questionnaire";
+import { useFriendStore } from "@/stores/friendStore";
 
-// Mock 数据
-const mockQuestionnaires = {
-  me: {
-    questionnairesAsOwnerAsFriend: [
-      { questionnaire: { id: "1", title: "问卷1" } },
-      { questionnaire: { id: "2", title: "问卷2" } },
-    ]
-  }
-};
-
-const questionnaires = ref(mockQuestionnaires.me); // 直接使用 mock 数据
+const friendStore = useFriendStore();
+const questionnaires = ref([]);
 const range = ref([]);
+const curQuestionnaireId = ref(-1);
+const showType = ref(-1);
+const rankData = ref([]);
 
-// 模拟数据更新
-watch(questionnaires, (newVal) => {
-  range.value = newVal?.questionnairesAsOwnerAsFriend.map((item) => ({
-    value: item.questionnaire.id,
-    text: item.questionnaire.title,
-  }));
+watch(questionnaires, () => {
+	showType.value = questionnaires.value.length ? 1 : -1;
+	range.value = questionnaires.value.map((item) => ({
+		value: item.template.id,
+		text: item.template.title
+	}))
 });
 
-// 处理错误的 mock 数据
-const questionnairesError = ref(null);
-
-watch(questionnairesError, (newVal) => {
-  if (newVal) {
-    uni.showToast({
-      title: "获取问卷失败",
-      icon: "error",
-      duration: 2000,
-    });
-    throw new Error(`获取问卷失败: ${newVal}`);
-  }
+watch(curQuestionnaireId, () => {
+	friendStore.calculateRankData(curQuestionnaireId.value);
+	rankData.value = friendStore.rankData;
 });
-
-const curValue = ref("");
-const curQuestionnaireId = ref("");
-
-onLoad((option) => {
-  meOrOther.value = option?.option;
+onMounted(async () => {
+	questionnaireApi.getQuestionnaireList().then((res) => {
+		questionnaires.value = res;
+	});
+	await friendStore.fetchFriendsQuestionnaire();
 });
-
-const rankData = ref({});
-
-// Mock 数据：排行榜
-const mockRankData = {
-  "1": [
-    { id: "1", nickName: "用户A", avatarUrl: "urlA", similarity: 95 },
-    { id: "2", nickName: "用户B", avatarUrl: "urlB", similarity: 90 },
-  ],
-  "2": [
-    { id: "3", nickName: "用户C", avatarUrl: "urlC", similarity: 85 },
-    { id: "4", nickName: "用户D", avatarUrl: "urlD", similarity: 80 },
-  ]
-};
-
-// 选择问卷
-async function chooseQuestionnaire(e) {
-  curQuestionnaireId.value = e;
-  if (meOrOther.value === "me") {
-    await getListAsOwner(e);
-  } else {
-    await getListAsFriend(e);
-  }
-}
-
-// 模拟获取数据
-async function getListAsOwner(questionnaireId) {
-  rankData.value[questionnaireId] = mockRankData[questionnaireId] || [];
-}
-
-async function getListAsFriend(questionnaireId) {
-  rankData.value[questionnaireId] = mockRankData[questionnaireId] || [];
+function chooseQuestionnaire(e) {
+	const res = questionnaires.value.find((item) => +item.id === +e)?.status ?? -1;
+	showType.value = res;
 }
 </script>
 
 <style lang="scss" scoped>
-.rank-list-container {
+.show-container {
 	.no-data {
 		padding-top: 80px;
 	}
-	.rank-list {
+}
+
+.questionnaire-select {
+	position: fixed;
+	top: -1px;
+	width: 100vw;
+	background-color: #ffffff;
+	z-index: 1000;
+}
+
+.top-placeholder {
+	height: 50px;
+	width: 100vw;
+}
+.rank-list {
 		.rank-item {
 			height: 60px;
 			width: calc(100vw - 40px);
@@ -180,18 +150,4 @@ async function getListAsFriend(questionnaireId) {
 			}
 		}
 	}
-}
-
-.questionnaire-select {
-	position: fixed;
-	top: -1px;
-	width: 100vw;
-	background-color: #ffffff;
-	z-index: 1000;
-}
-
-.top-placeholder {
-	height: 50px;
-	width: 100vw;
-}
 </style>
