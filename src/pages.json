@@ -106,6 +106,34 @@
         "navigationBarTitleText": "AI助手",
         "enablePullDownRefresh": false
       }
+    },
+		{
+      "path": "pages/emotion/index",
+      "style": {
+        "navigationBarTitleText": "情绪体温",
+        "enablePullDownRefresh": false
+      }
+    },
+		{
+      "path": "pages/conflict-map/index",
+      "style": {
+        "navigationBarTitleText": "冲突地图",
+        "enablePullDownRefresh": false
+      }
+    },
+		{
+      "path": "pages/empathy-game/index",
+      "style": {
+        "navigationBarTitleText": "共情游戏",
+        "enablePullDownRefresh": false
+      }
+    },
+		{
+      "path": "pages/growth-archive/index",
+      "style": {
+        "navigationBarTitleText": "成长档案",
+        "enablePullDownRefresh": false
+      }
     }
   ],
   "globalStyle": {

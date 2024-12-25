@@ -50,6 +50,7 @@
     "@dcloudio/uni-mp-xhs": "3.0.0-4030620241128001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-4030620241128001",
     "@dcloudio/uni-ui": "^1.5.7",
+    "dayjs": "^1.11.13",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "markdown-it": "^14.1.0",
