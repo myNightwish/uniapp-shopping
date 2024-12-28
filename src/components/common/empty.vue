@@ -9,7 +9,7 @@ import { emptyUrl } from "@/const";
 const props = defineProps({
   info: {
     type: String,
-    default: "暂无消息"
+    default: "哇，这里还没有内容哦~"
   }
 });
 </script>

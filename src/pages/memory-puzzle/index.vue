@@ -106,8 +106,9 @@ export default {
           partnerId: this.partnerId,
           description: this.description,
         }).then(result => {
-          if (result.data.success) {
-            this.puzzleId = result.data.data.id;
+          console.log('createMemoryPuzzle result:', result)
+          if (result.success) {
+            this.puzzleId = result.data.id;
             this.step = 2;
             this.startCheckingResult();
           }
@@ -117,14 +118,17 @@ export default {
       }
     },
     startCheckingResult() {
+      console.log('enter-checking-result')
       this.checkTimer = setInterval(async () => {
         try {
           const result = await getMemoryPuzzleResult(this.puzzleId);
-          if (result.data.success && result.data.data.match_score) {
+      console.log('enter-checking-time--->', result)
+
+          if (result.success && result.data.match_score) {
             clearInterval(this.checkTimer);
-            this.matchScore = Math.round(result.data.data.match_score);
-            this.partnerDescription = result.data.data.partner_description;
-            this.analysis = result.data.data.analysis;
+            this.matchScore = Math.round(result.data.match_score);
+            this.partnerDescription = result.data.partner_description;
+            this.analysis = result.data.analysis;
             this.step = 3;
           }
         } catch (error) {
@@ -133,6 +137,7 @@ export default {
       }, 5000); // 每5秒检查一次
     },
     sharePuzzle() {
+      // todo: 分享逻辑实现
       uni.share({
         provider: 'weixin',
         scene: 'WXSceneSession',

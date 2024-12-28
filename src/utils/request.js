@@ -4,6 +4,8 @@ let isRefreshing = false; // 是否正在刷新 Token
 let refreshQueue = []; // 等待刷新 Token 的请求队列
 // 服务器基础地址
 const BASE_URL = 'http://localhost:7001'; // 替换为你的实际API地址
+// const BASE_URL = 'http://192.168.31.253:7001'; // 替换为你的实际API地址
+// const BASE_URL = 'http://127.0.0.1:7001'; // 替换为你的实际API地址
 // 创建请求实例
 export const request = (options) => {
   return new Promise((resolve, reject) => {

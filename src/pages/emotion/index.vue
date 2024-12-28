@@ -70,11 +70,12 @@
 </template>
 
 <script>
-import {postEmotionRecord, getEmotionTrend} from '@/api/emotion.js'
+import {postEmotionRecord, getEmotionTrend} from '@/api/emotion.js';
+import {emotions} from './emotion.js'
 export default {
   data() {
     return {
-      emotions: [],
+      emotions,
       selectedEmotion: '',
       intensity: 3,
       trigger: '',
@@ -98,7 +99,8 @@ export default {
   },
   computed: {
     canSubmit() {
-      return this.selectedEmotion && this.trigger.length > 0;
+      console.log('9999-->', this.selectedEmotion)
+      return this.selectedEmotion && this.trigger;
     },
   },
   methods: {

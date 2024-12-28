@@ -61,7 +61,7 @@
 
 <script>
 import { currentTask } from './empathy.js'
-import {completeEmpathyTask, getEmpathyTasks} from '@/api/empathy.js'
+import {completeEmpathyTask, getEmpathyTasks, getEmpathyTaskHistory, getEmpathyCurtask} from '@/api/empathy.js'
 import ProgressBoard from './components/ProgressBoard.vue';
 export default {
   components: {
@@ -123,9 +123,8 @@ export default {
     },
     async updateTaskHistory() {
       try {
-        // const result = await this.$http.get('/api/empathy/task-history');
-        // this.completedTaskList = result.data.data;
-        this.completedTaskList = taskHistory;
+        const result = await getEmpathyTaskHistory();
+        this.completedTaskList = result.data.data;
       } catch (error) {
         console.error('获取任务历史失败:', error);
       }
@@ -145,9 +144,8 @@ export default {
   },
   async onShow() {
     try {
-      // const result = await this.$http.get('/api/empathy/current-task');
-      const result = await getEmpathyTasks();
-      // this.currentTask = result.data.data;
+      const result = await getEmpathyCurtask();
+      this.currentTask = result.data.data;
       this.updateTaskHistory();
     } catch (error) {
       console.error('获取任务失败:', error);

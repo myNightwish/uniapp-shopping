@@ -73,7 +73,6 @@ export default {
   methods: {
     async loadProgress() {
       try {
-        // const result = await this.$http.get('/api/empathy/progress');
         const result = await getEmpathyProgress()
         if (result.data.success) {
           this.progress = result.data.data;

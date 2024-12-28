@@ -18,10 +18,22 @@ export const completeEmpathyTask = (data) => {
 }
 
 // 获取共情游戏进度
-// todo: 缺失
 export const getEmpathyProgress = () => {
   return request({
     url: '/api/empathy/progress',
+    method: 'GET'
+  });
+}
+
+export const getEmpathyCurtask = () => {
+  return request({
+    url: '/api/empathy/current-task',
+    method: 'GET'
+  });
+}
+export const getEmpathyTaskHistory = () => {
+  return request({
+    url: '/api/empathy/task-history',
     method: 'GET'
   });
 }

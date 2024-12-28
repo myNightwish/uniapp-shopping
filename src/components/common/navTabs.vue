@@ -1,6 +1,6 @@
 <template>
 	<view class="nav-tabs-container">
-		<view v-for="tab in tabs">
+		<view v-for="(tab, idx) in tabs" :key="idx">
 			<view class="tabs-item"
 			:class="{ 'tabs-item-active': activeTab === tab }"
 			@click="clickTab(tab)">{{ tab }}</view>
