@@ -7,15 +7,15 @@
     <!-- 任务卡片 -->
     <view class="task-card" v-if="currentTask">
       <view class="task-content">
-        <text class="task-title">{{currentTask.title}}</text>
-        <text class="task-desc">{{currentTask.description}}</text>
+        <text class="task-title">{{currentTask.task.title}}</text>
+        <textarea class="task-desc" :placeholder="currentTask.task.description"></textarea>
       </view>
       
       <view class="task-actions">
         <button 
           class="action-btn"
           :disabled="!canSubmit"
-          @tap="completeTask"
+          @click="completeTask"
         >
           完成任务
         </button>
@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import { currentTask } from './empathy.js'
 import {completeEmpathyTask, getEmpathyTasks, getEmpathyTaskHistory, getEmpathyCurtask} from '@/api/empathy.js'
 import ProgressBoard from './components/ProgressBoard.vue';
 export default {
@@ -69,7 +68,7 @@ export default {
   },
   data() {
     return {
-      currentTask: currentTask,
+      currentTask: null,
       seedLevel: 1,
       experience: 0,
       nextLevelExp: 100,
@@ -91,21 +90,6 @@ export default {
     }
   },
   methods: {
-    async completeTask() {
-      try {
-        const result = await completeEmpathyTask({ taskId: this.currentTask.id});
-
-        if (result.data.success) {
-          this.experience += result.data.data.expGained;
-          this.completedTasks++;
-          this.checkLevelUp();
-          this.showSuccess('任务完成');
-          this.updateTaskHistory();
-        }
-      } catch (error) {
-        this.showError('提交失败');
-      }
-    },
     checkLevelUp() {
       if (this.experience >= this.nextLevelExp) {
         this.levelUp();
@@ -124,7 +108,8 @@ export default {
     async updateTaskHistory() {
       try {
         const result = await getEmpathyTaskHistory();
-        this.completedTaskList = result.data.data;
+        console.log('getEmpathyTaskHistory-->', result)
+        this.completedTaskList = result.data;
       } catch (error) {
         console.error('获取任务历史失败:', error);
       }
@@ -145,7 +130,8 @@ export default {
   async onShow() {
     try {
       const result = await getEmpathyCurtask();
-      this.currentTask = result.data.data;
+      console.log('getEmpathyCurtask-->', result)
+      this.currentTask = result.data;
       this.updateTaskHistory();
     } catch (error) {
       console.error('获取任务失败:', error);
@@ -153,10 +139,10 @@ export default {
   },
   async completeTask() {
       try {
-        const result = await completeEmpathyTask({ taskId: this.currentTask.id});
+        const result = await completeEmpathyTask({ taskId: this.currentTask.task_id});
 
-        if (result.data.success) {
-          const expGained = result.data.data.expGained;
+        if (result.success) {
+          const expGained = result.data.expGained;
           this.lastExpGained = expGained;
           this.showExpAnimation(expGained);
           await this.updateExperience(expGained);

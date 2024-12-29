@@ -13,19 +13,33 @@
 			<view class="user-left">
 				<view class="avatar">
 					<image
-						style="height: 60px; width: 60px; border-radius: 30px"
+						style="height: 50px; width: 50px; border-radius: 50%"
 						:src="meStore.user.avatarUrl || userDefaultData.avatarUrl"
 					></image>
 				</view>
 				<view class="info">
-					<view class="nick-name">昵称：{{ meStore.user?.nickName || userDefaultData.nickName }}</view>
-					<view class="id">ID：{{ meStore.user?.openid || userDefaultData.id }}</view>
+					<view class="nick-name">{{ meStore.user?.nickName || userDefaultData.nickName }}</view>
 				</view>
 			</view>
 			<view class="user-right">
-						<button class="share-btn" open-type="share">
-							添加好友
-						</button>
+				<template v-if="hasBindedPartner">
+					<text>已绑定Ta:</text>
+					<view class="avatar">
+						<image
+							style="height: 50px; width: 50px; border-radius: 50%"
+							:src="partnerInfos.avatarUrl || userDefaultData.avatarUrl"
+						></image>
+					</view>
+					<view class="info">
+						<view class="nick-name">{{ partnerInfos.nickName || userDefaultData.nickName }}</view>
+					</view>
+				</template>
+				<button
+					v-else
+					class="share-btn"
+					open-type="share"
+				>去绑定Ta
+				</button>
 			</view>
 		</view>
 		<!-- 首页金刚位 -->
@@ -37,6 +51,14 @@
 				<view class="common-title">{{ item.name }}</view>
 			</view>
 		</view>
+		<!-- 弹窗 -->
+    <view v-if="isPopupVisible" class="popup">
+      <text>您即将与用户 {{ partnerId }} 绑定为伴侣，是否确认？</text>
+      <view class="popup-actions">
+        <button @click="handleBindingConfirm">确认</button>
+        <button @click="handleBindingCancel">取消</button>
+      </view>
+    </view>
 		<view class="news-title"> 消息中心 </view>
 		<view class="news-container" v-for="item in news" :key="item.id">
 			<one-row-card>
@@ -68,15 +90,16 @@
 </template>
 
 <script setup>
-import { ref} from "vue";
+import { ref, computed, onMounted} from "vue";
 import { userDefaultData, banners, homeIconsList } from "@/const";
 import OneRowCard from "@/components/common/oneRowCard.vue";
 import empty from "@/components/common/empty.vue";
-import { onPullDownRefresh, onShow, onUnload, onShareAppMessage } from "@dcloudio/uni-app";
+import { onPullDownRefresh, onShow, onUnload, onLoad, onShareAppMessage } from "@dcloudio/uni-app";
 import { getNews, setNews } from "@/utils/news";
 import UniIcons from '@/common/uni-icons/uni-icons.vue';
 import { useAuthStore } from "@/stores/auth.js";
 import loginBtn from "./loginBtn.vue";
+import { bindRelationship } from "@/api/relationship";
 
 const meStore = useAuthStore();
 const mockNewsData = [
@@ -90,17 +113,26 @@ const mockNewsData = [
 	},
 ];
 onShareAppMessage(() => {
-	const userId = meStore.user?.id;
+	const user = meStore.user?.openid;
 	return {
-		title: "快来跟我成为好友吧",
-		path: `/pages/me/index?shareId=${userId}`,
+		title: "一起被绑定吧",
+		path: `/pages/index/index?partnerId=${user}`,
 	};
 });
 const news = ref(getNews() || mockNewsData); // 消息数据
 const newsPopup = ref();
 const curNewsId = ref("");
 const curNewsContent = ref("");
-
+// 数据与状态
+const partnerId = ref(null); // 保存 URL 中的 partnerId
+const isPopupVisible = ref(false); // 控制弹窗显示
+const partnerInfos = computed(() => {
+	return meStore.user.partnerInfo || {}
+})
+// 标记是否已绑定伴侣
+const hasBindedPartner = computed(() => {
+	return !!meStore.user.partnerInfo?.openid;
+});
 onShow(() => {
 	// todo： 消息订阅：拉取消息接口
 	news.value = mockNewsData;
@@ -110,7 +142,43 @@ onShow(() => {
 onUnload(() => {
 	setNews(news.value);
 });
+// 页面加载时处理 URL 参数
+onLoad((options) => {
+  if (options.partnerId && !hasBindedPartner) {
+    partnerId.value = options.partnerId; // 保存 partnerId
+    showBindingPopup(); // 弹出绑定提示
+  }
+});
 
+// 弹窗交互
+const showBindingPopup = () => {
+  isPopupVisible.value = true;
+};
+
+const handleBindingConfirm = async () => {
+  try {
+		const res = await bindRelationship({
+			partnerId: partnerId.value,
+		})
+
+    if (res.success) {
+      uni.showToast({ title: '绑定成功！', icon: 'success' });
+    } else {
+      uni.showToast({ title: res.message, icon: 'none' });
+    }
+		meStore.getUserInfo();
+  } catch (error) {
+    console.error('绑定失败:', error);
+    uni.showToast({ title: '绑定失败，请重试', icon: 'none' });
+  } finally {
+    isPopupVisible.value = false;
+  }
+};
+
+const handleBindingCancel = () => {
+  isPopupVisible.value = false;
+  uni.showToast({ title: '您取消了绑定操作', icon: 'none' });
+};
 // 下拉刷新替换
 onPullDownRefresh(() => {
 	uni.stopPullDownRefresh();
@@ -283,5 +351,33 @@ function toJump(url, isTab) {
 
 .no-news {
 	padding: 50px 0;
+}
+.popup {
+  position: fixed;
+  top: 30%;
+  left: 10%;
+  width: 80%;
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.share-btn {
+  background-color: #007aff; /* 激活态背景色 */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+.partner-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 </style>

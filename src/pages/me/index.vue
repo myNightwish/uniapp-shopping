@@ -9,7 +9,7 @@
 							:src="userInfo.avatarUrl || userDefaultData.avatarUrl"
 						></image>
 						<view class="text-info">
-							<view class="nick-name">昵称：{{ userInfo.nickName || userDefaultData.nickName }}</view>
+							<view class="nick-name">{{ userInfo.nickName || userDefaultData.nickName }}</view>
 						</view>
 					</view>
 					<view class="icon" @click="toUpdateUser">

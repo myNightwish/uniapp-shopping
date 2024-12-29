@@ -40,7 +40,6 @@ export const checkUserAuth = async () => {
   try {
     // 优先使用 accessToken 获取用户信息
     authStore.getUserInfo();
-    authStore.getUserInfo();
   } catch (error) {
     if (error.message.includes('401')) {
       // accessToken 失效，尝试刷新 Token

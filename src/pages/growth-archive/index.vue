@@ -14,7 +14,7 @@
         </view>
       </view>
     </view>
-
+    {{ timeline }}
     <!-- 成长轨迹 -->
     <view class="timeline-section">
       <text class="section-title">成长轨迹</text>
@@ -80,9 +80,10 @@ export default {
     async loadArchiveData() {
       try {
         const result = await getGrowthArchive();
-        if (result.data.success) {
-          this.timeline = result.data.data.timeline;
-          this.suggestion = result.data.data.suggestion;
+        if (result.success) {
+          this.timeline = result.data.timeline;
+          this.suggestion = result.data.suggestion;
+          this.stats = result.data.stats;
         }
       } catch (error) {
         console.error('加载档案失败:', error);
